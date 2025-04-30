@@ -1,0 +1,1 @@
+import{I as a,o as c,K as i,X as t,e as l}from"./cj8-9b6w.js";const u=a({__name:"T3CeMenuPagesList",props:{children:{default:()=>[]}},setup(n){const r=n,s=()=>r.children.map(e=>t("li",{},[t(l,{to:e.link,target:e.target||null,title:e.title},()=>[e.title]),e.children?t(u,{children:e.children}):null])),o=()=>t("ul",{},{default:()=>s()});return(e,p)=>(c(),i(o))}});export{u as _};

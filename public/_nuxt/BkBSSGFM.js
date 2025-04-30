@@ -1,0 +1,1 @@
+import{_ as o}from"./B0qhjz3x.js";import{I as n,o as s,c,b as a}from"./cj8-9b6w.js";const r={class:"t3-ce-html"},d=n({__name:"T3CeHtml",props:{bodytext:{}},setup(_){return(t,m)=>{const e=o;return s(),c("div",r,[a(e,{content:t.bodytext},null,8,["content"])])}}});export{d as default};
