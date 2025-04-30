@@ -1,0 +1,224 @@
+openapi: 3.0.2
+info:
+  version: 1.0.0
+  title: Pages & Items API
+  description: An API to manage pages & items
+paths:
+  /pages:
+    post:
+      summary: Create a new page
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Page'
+      responses:
+        '201':
+          description: Page created
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+  /pages/{id}:
+    put:
+      summary: Update a page
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Page'
+      responses:
+        '200':
+          description: Page updated
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+        '404':
+          description: Page not found
+    delete:
+      summary: Delete a page
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Page deleted
+        '401':
+          description: Unauthorized
+        '404':
+          description: Page not found
+  /items:
+    post:
+      summary: Create a new item
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+      responses:
+        '201':
+          description: Item created
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+  /items/{id}:
+    put:
+      summary: Update an item
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+      responses:
+        '200':
+          description: Item updated
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+        '404':
+          description: Item not found
+    delete:
+      summary: Delete an item
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Item deleted
+        '401':
+          description: Unauthorized
+        '404':
+          description: Item not found
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-Api-Key
+  schemas:
+    Page:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The page's ID.
+        name:
+          type: string
+          description: The page's name.
+        attributes:
+          type: object
+          additionalProperties:
+            oneOf:
+              - type: string
+              - type: integer
+              - type: string
+                enum: [Option1, Option2]
+          description: Page attributes, key-value pairs.
+        parent:
+          type: string
+          format: uuid
+          description: The ID of the parent page, if any.
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+          description: The items associated with the page.
+    Metadata:
+      type: object
+      description: The metadata of the page.
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        robots:
+          type: string
+        keywords:
+          type: array
+          items:
+            type: string
+    Item:
+      type: object
+      required:
+        - id
+        - parent
+        - type
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The item's ID.
+        name:
+          type: string
+          description: The item's name.
+        attributes:
+          type: object
+          additionalProperties:
+            oneOf:
+              - type: string
+              - type: integer
+              - type: string
+                enum: [Option1, Option2]
+          description: Item attributes, key-value pairs.
+        content:
+          type: string
+          description: The content of the item.
+        parent:
+          type: string
+          format: uuid
+          description: The ID of the parent page or item.
+        type:
+          type: string
+          enum:
+            - dynamic
+            - list
+            - news
+            - project
+            - event
+          description: The type of the item.

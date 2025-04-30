@@ -1,0 +1,41 @@
+@startuml
+
+'Overview Frontend Server
+
+node "CMS" {
+  [Data Renderer]
+}
+
+node "Frontend Server" {
+  () "Backend API"
+  "Backend API" --> [Backend]
+  [Webserver]
+  () "Frontend API"
+  "Frontend API" --> [Frontend]
+  [Backend] -[hidden] [Webserver]
+}
+
+node "Browser" {
+  [Frontend App]
+}
+
+database "Frontend Data" {
+    frame "Site" {
+      folder "Pages" {
+        [Page]
+      }
+      folder "Items" {
+        [Item]
+      }
+    }
+
+}
+
+
+[Data Renderer] --> [Backend API] : Pages\nItems
+[Backend] --> [Frontend Data] : Writes
+[Webserver] --> [Frontend Data] : reads
+[Frontend] --> [Frontend Data] : reads
+[Frontend App] --> [Frontend API] : Items
+[Browser] --> [Webserver]: Pages
+@enduml
