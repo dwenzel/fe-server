@@ -1,1 +1,0 @@
-import{I as s,o as a,c as o,a as r,S as t,L as c}from"./cj8-9b6w.js";const l=["src"],u=s({__name:"MediaAudio",props:{file:{}},setup(i){return(e,n)=>e.file.publicUrl?(a(),o("audio",t({key:0},e.$attrs,{class:[[e.$attrs.class,e.$attrs.staticClass],"t3-ce-media-audio"],controls:""}),[r("source",{src:e.file.publicUrl,type:"audio/mp3"},null,8,l)],16)):c("",!0)}});export{u as default};

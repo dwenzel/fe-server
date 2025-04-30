@@ -1,1 +1,0 @@
-import{u as a}from"./BFXQ4RdU.js";import{I as i,o as r,K as p,T as t,m as l}from"./cj8-9b6w.js";const u=i({__name:"MediaFile",props:{file:{}},setup(e){const o=e,{mediaTypeComponent:n}=a(o.file);return(s,m)=>(r(),p(t(l(n)),{file:s.file},null,8,["file"]))}});export{u as _};
