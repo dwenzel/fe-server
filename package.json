@@ -6,7 +6,6 @@
   "scripts": {
     "prestart": "npm install",
     "start": "node index.js",
-    "preview": "node ./server/index.mjs",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
