@@ -2,7 +2,7 @@ import request from 'supertest';
 import { v4 as uuidv4 } from 'uuid';
 
 // Replace with actual server URL when deployed
-const API_URL = process.env.API_URL || 'http://localhost:3000';
+const API_URL = process.env.API_URL || 'http://localhost:8080';
 const API_KEY = process.env.API_KEY || 'test-api-key';
 
 describe('Items API', () => {
@@ -17,7 +17,8 @@ describe('Items API', () => {
       metadata: {
         title: 'Parent Page',
         description: 'A parent page for items tests'
-      }
+      },
+      items: [] // Empty items array
     };
 
     await request(API_URL)
@@ -75,6 +76,22 @@ describe('Items API', () => {
       .post('/items')
       .set('X-Api-Key', API_KEY)
       .send(invalidItem);
+
+    expect(response.status).toBe(400);
+  });
+
+  test('POST /items - Should validate enum type values', async () => {
+    const invalidTypeItem = {
+      id: uuidv4(),
+      name: 'Invalid Type Item',
+      parent: pageId,
+      type: 'invalid-type' // Not in the allowed enum values
+    };
+
+    const response = await request(API_URL)
+      .post('/items')
+      .set('X-Api-Key', API_KEY)
+      .send(invalidTypeItem);
 
     expect(response.status).toBe(400);
   });

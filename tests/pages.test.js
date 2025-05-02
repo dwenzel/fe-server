@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 // Replace with actual server URL when deployed
 // For local development, you'll need to start the server separately before running tests
-const API_URL = process.env.API_URL || 'http://localhost:3000';
+const API_URL = process.env.API_URL || 'http://localhost:8080';
 const API_KEY = process.env.API_KEY || 'test-api-key';
 
 describe('Pages API', () => {
@@ -23,7 +23,8 @@ describe('Pages API', () => {
       description: 'A test page',
       robots: 'index,follow',
       keywords: ['test', 'page']
-    }
+    },
+    items: [] // Empty items array
   };
 
   const updatedPage = {
