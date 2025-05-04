@@ -26,17 +26,17 @@ jobs:
         run: mkdir -p .build/reports/junit .build/reports/html .build/reports/coverage
       
       - name: Build and start Docker containers
-        run: docker-compose build
+        run: docker compose build
       
       # Run unit tests (no API dependency needed)
       - name: Run unit tests in Docker
         run: |
-          docker-compose run --no-deps --rm -e TEST_TYPE=unit test
+          docker compose run --no-deps --rm -e TEST_TYPE=unit test
           # Copy test reports from container
           docker cp $(docker ps -alq):/app/.build/reports/. .build/reports/
       
       - name: Start API container for functional tests
-        run: docker-compose up -d api
+        run: docker compose up -d api
       
       # Wait for API to be ready
       - name: Wait for API to be ready
@@ -55,14 +55,14 @@ jobs:
           
           if [ $timeout -eq 0 ]; then
             echo "Timed out waiting for API"
-            docker-compose logs api
+            docker compose logs api
             exit 1
           fi
       
       # Run functional tests with API dependency
       - name: Run functional tests in Docker
         run: |
-          docker-compose run --rm -e TEST_TYPE=functional test
+          docker compose run --rm -e TEST_TYPE=functional test
           # Copy test reports from container
           docker cp $(docker ps -alq):/app/.build/reports/. .build/reports/
       
