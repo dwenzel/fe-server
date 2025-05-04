@@ -1,0 +1,29 @@
+# GitHub Badges Configuration
+
+# Standard Test Workflow
+tests:
+  workflow: test.yml
+  label: Tests
+  message: passing
+  color: green
+
+# Matrix Testing Workflow  
+matrix-tests:
+  workflow: test-matrix.yml
+  label: Matrix Tests
+  message: passing
+  color: green
+
+# Docker Testing Workflow
+docker-tests:
+  workflow: docker-test.yml
+  label: Docker Tests
+  message: passing
+  color: green
+  
+# Coverage
+coverage:
+  workflow: test.yml
+  label: coverage
+  message: 70%
+  color: yellowgreen

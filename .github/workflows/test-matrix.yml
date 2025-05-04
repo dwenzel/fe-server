@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+permissions:
+  contents: read    # Required for checkout
+  checks: write     # Required for mikepenz/action-junit-report
+  pull-requests: write # Required for annotations
+
 jobs:
   test:
     name: ${{ matrix.test-type }} Tests (Node ${{ matrix.node-version }})

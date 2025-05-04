@@ -1,0 +1,21 @@
+# Default workflow permissions for all workflows
+# This is a new feature in GitHub Actions
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository
+
+# Default to read-only permissions
+permissions: read-all
+
+workflow_permissions:
+  actions: read
+  checks: write
+  contents: read
+  deployments: read
+  id-token: read
+  issues: read
+  discussions: read
+  packages: read
+  pages: read
+  pull-requests: write
+  repository-projects: read
+  security-events: read
+  statuses: read
