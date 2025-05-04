@@ -36,6 +36,15 @@ describe('Authentication Tests', () => {
     expect(response.status).toBe(401);
   });
 
+  test('POST /pages - Should accept requests with valid API key', async () => {
+    const response = await request(API_URL)
+      .post('/pages')
+      .set('X-Api-Key', VALID_API_KEY)
+      .send(testPage);
+
+    expect(response.status).toBe(201);
+  });
+
   test('PUT /pages/{id} - Should reject requests without API key', async () => {
     const response = await request(API_URL)
       .put(`/pages/${testPage.id}`)

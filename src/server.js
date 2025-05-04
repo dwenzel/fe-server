@@ -38,7 +38,7 @@ app.get('/health', (req, res) => {
 
 // API version endpoint
 app.get('/version', (req, res) => {
-  res.status(200).json({ 
+  res.status(200).json({
     version: config.api.version,
     server: 'Pages & Items API'
   });
@@ -53,7 +53,7 @@ app.use('/pages', pagesMiddleware.getRouter());
 app.use('/items', itemsMiddleware.getRouter());
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   logger.error(`Unhandled error: ${err.stack}`);
   res.status(500).json({ error: 'Internal server error' });
 });
