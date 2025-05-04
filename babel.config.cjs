@@ -1,5 +1,5 @@
 /**
- * Babel configuration for Jest tests
+ * Babel configuration for Jest tests and ES modules
  */
 
 module.exports = {
@@ -10,9 +10,10 @@ module.exports = {
         targets: {
           node: 'current',
         },
+        modules: 'auto'
       },
     ],
   ],
   // Add any plugins you might need here
-  plugins: [],
+  plugins: []
 };

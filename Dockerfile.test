@@ -1,0 +1,21 @@
+FROM node:22-alpine
+
+WORKDIR /app
+
+# Install dependencies including dev dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy application files
+COPY . .
+
+# Create test report directory
+RUN mkdir -p .build/reports/junit .build/reports/html
+
+# Set environment variables
+ENV NODE_ENV=test
+ENV API_URL=http://api:8080
+ENV API_KEY=test-api-key
+
+# Run tests
+CMD ["npm", "test"]

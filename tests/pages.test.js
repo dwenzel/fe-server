@@ -1,5 +1,6 @@
 import request from 'supertest';
 import { v4 as uuidv4 } from 'uuid';
+import {expect, test} from "@jest/globals";
 
 // Replace with actual server URL when deployed
 // For local development, you'll need to start the server separately before running tests

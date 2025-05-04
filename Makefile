@@ -1,9 +1,9 @@
-.PHONY: help install start stop test test-server test-watch logs restart status clean
+.PHONY: help install start stop test test-server test-watch logs restart status clean dev
 
 # Variables
 DOCKER_COMPOSE = docker-compose
-CONTAINER_NAME = fe-server
-TEST_CONTAINER = fe-server-test
+CONTAINER_NAME = pages-items-api
+TEST_CONTAINER = pages-items-api-test
 
 # Default target
 help:
@@ -15,24 +15,35 @@ help:
 	@echo "  make status          - Show container status"
 	@echo "  make logs            - Show server logs"
 	@echo "  make test            - Run all tests in a separate container"
-	@echo "  make test-server     - Run all tests directly in the server container" 
+	@echo "  make test-server     - Run all tests directly in the server container"
 	@echo "  make test-watch      - Run tests in watch mode"
 	@echo "  make test-pages      - Run only the pages API tests"
 	@echo "  make test-items      - Run only the items API tests"
 	@echo "  make test-auth       - Run only the authentication tests"
 	@echo "  make test-schema     - Run only the schema validation tests"
 	@echo "  make test-integration - Run only the integration tests"
+	@echo "  make dev             - Start the server in development mode with nodemon"
 	@echo "  make clean           - Remove containers, volumes, and prune Docker resources"
 
 # Install dependencies
 install:
 	@echo "Installing dependencies..."
+	npm install
+
+# Install and build Docker images
+docker-install:
+	@echo "Building Docker images..."
 	$(DOCKER_COMPOSE) build
 
 # Start the container
 start:
 	@echo "Starting containers..."
-	$(DOCKER_COMPOSE) up -d fe-server
+	$(DOCKER_COMPOSE) up -d api
+
+# Start the server directly (no container)
+dev:
+	@echo "Starting server in development mode..."
+	npm run dev
 
 # Stop the container
 stop:
@@ -52,17 +63,22 @@ status:
 # Show logs
 logs:
 	@echo "Server logs:"
-	$(DOCKER_COMPOSE) logs -f fe-server
+	$(DOCKER_COMPOSE) logs -f api
 
 # Run tests in a separate container
 test:
 	@echo "Running tests..."
 	$(DOCKER_COMPOSE) run --rm test
 
+# Run tests locally
+test-local:
+	@echo "Running tests locally..."
+	npm test
+
 # Run tests in watch mode
 test-watch:
 	@echo "Running tests in watch mode..."
-	$(DOCKER_COMPOSE) run --rm test npm run test:watch
+	npm run test:watch
 
 # Run tests directly in the server container
 test-server:
@@ -72,10 +88,10 @@ test-server:
 # Run a specific test
 test-%:
 	@echo "Running test $*..."
-	$(DOCKER_COMPOSE) exec $(CONTAINER_NAME) npm test -- tests/$*.test.js
+	npm test -- tests/$*.test.js
 
 # Clean up
 clean:
 	@echo "Cleaning up..."
 	$(DOCKER_COMPOSE) down -v
-	docker system prune -f --filter "label=com.docker.compose.project=fe-server"
+	docker system prune -f --filter "label=com.docker.compose.project=pages-items-api"

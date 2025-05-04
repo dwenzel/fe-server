@@ -14,13 +14,13 @@ module.exports = {
 
     // Automatically clear mock calls and instances between every test
     clearMocks: true,
-
+    //collectCoverage: true,
     // The directory where Jest should output its coverage files
-    coverageDirectory: 'coverage',
+    coverageDirectory: '.build/reports/coverage',
 
     // Collect coverage from these directories
     collectCoverageFrom: [
-        'dist/**/*.js',
+        'src/**/*.js',
         '!**/node_modules/**',
         '!**/vendor/**',
     ],
@@ -28,6 +28,7 @@ module.exports = {
     // Coverage reporters
     coverageReporters: ['text', 'lcov', 'clover'],
 
+    //detectOpenHandles: true,
     // Transform files with babel-jest
     transform: {
         '^.+\\.jsx?$': 'babel-jest'
@@ -48,23 +49,25 @@ module.exports = {
     // Disable automatic mocking
     automock: false,
 
-    // Retry failed tests - useful for API tests that might occasionally fail
-    retry: 2,
-
     // Test reporters
     reporters: [
         'default',
         ['jest-junit', {
-            outputDirectory: './.build/reports/junit',
+            outputDirectory: './.build/reports/functional/junit',
             outputName: 'junit.xml',
         }],
         ["./node_modules/jest-html-reporter", {
-            outputPath: './.build/reports/html/report.html',
-            includeFailureMsg: true,
-            "pageTitle": "Test Report"
+            "pageTitle": "Test Report",
+            outputPath: './.build/reports/functional/html/test-report.html',
         }]
     ],
 
+    // Handle ES modules
+    extensionsToTreatAsEsm: [],
+    moduleNameMapper: {
+        '^(\\.{1,2}/.*)\\.js$': '$1',
+    },
+
     // Force Jest to exit after all tests are complete
-    forceExit: true
+    //forceExit: true
 };
