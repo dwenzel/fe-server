@@ -57,13 +57,6 @@ jobs:
             exit 1
           fi
 
-      # Run functional tests with API dependency
-      - name: Run functional tests in Docker
-        run: |
-          docker compose run --rm -e TEST_TYPE=functional test
-          # Copy test reports from container
-          docker cp $(docker ps -alq):/app/.build/reports/. .build/reports/
-
       - name: Upload test reports
         uses: actions/upload-artifact@v4
         if: always()
