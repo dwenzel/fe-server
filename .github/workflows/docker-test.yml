@@ -1,0 +1,80 @@
+name: Docker Testing
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  docker-tests:
+    name: Docker Container Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Create report directories
+        run: mkdir -p .build/reports/junit .build/reports/html .build/reports/coverage
+      
+      - name: Build and start Docker containers
+        run: docker-compose build
+      
+      # Run unit tests (no API dependency needed)
+      - name: Run unit tests in Docker
+        run: |
+          docker-compose run --no-deps --rm -e TEST_TYPE=unit test
+          # Copy test reports from container
+          docker cp $(docker ps -alq):/app/.build/reports/. .build/reports/
+      
+      - name: Start API container for functional tests
+        run: docker-compose up -d api
+      
+      # Wait for API to be ready
+      - name: Wait for API to be ready
+        run: |
+          # Wait for API container to start (max 30 seconds)
+          timeout=30
+          while [ $timeout -gt 0 ]; do
+            if curl -s http://localhost:8080/health > /dev/null; then
+              echo "API is ready"
+              break
+            fi
+            echo "Waiting for API to be ready... ($timeout seconds left)"
+            sleep 1
+            timeout=$((timeout-1))
+          done
+          
+          if [ $timeout -eq 0 ]; then
+            echo "Timed out waiting for API"
+            docker-compose logs api
+            exit 1
+          fi
+      
+      # Run functional tests with API dependency
+      - name: Run functional tests in Docker
+        run: |
+          docker-compose run --rm -e TEST_TYPE=functional test
+          # Copy test reports from container
+          docker cp $(docker ps -alq):/app/.build/reports/. .build/reports/
+      
+      - name: Upload test reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: docker-test-reports
+          path: .build/reports
+          retention-days: 7
+      
+      - name: Publish Test Reports
+        uses: mikepenz/action-junit-report@v4
+        if: always()
+        with:
+          report_paths: '.build/reports/junit/*.xml'
+          check_name: 'Docker Test Results'
+          fail_on_failure: true
+          require_tests: true
+          include_passed: true

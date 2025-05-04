@@ -1,0 +1,70 @@
+name: Matrix Testing
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    name: ${{ matrix.test-type }} Tests (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [18, 20, 22]
+        test-type: [unit, functional]
+    
+    steps:
+      - uses: actions/checkout@v4
+        
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Create report directories
+        run: mkdir -p .build/reports/junit .build/reports/html .build/reports/coverage
+        
+      - name: Start API server (only for functional tests)
+        if: matrix.test-type == 'functional'
+        run: |
+          npm start &
+          # Wait for server to start
+          sleep 5
+        env:
+          NODE_ENV: test
+          PORT: 8080
+          API_KEY: test-api-key
+        
+      - name: Run ${{ matrix.test-type }} tests
+        run: npm run test:${{ matrix.test-type }}
+        env:
+          API_URL: http://localhost:8080
+          API_KEY: test-api-key
+      
+      - name: Upload test reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ matrix.test-type }}-tests-node-${{ matrix.node-version }}
+          path: |
+            .build/reports/junit/${{ matrix.test-type }}.xml
+            .build/reports/html/${{ matrix.test-type }}-test-report.html
+            .build/reports/coverage/${{ matrix.test-type }}
+          retention-days: 7
+      
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v4
+        if: always() # always run even if the previous step fails
+        with:
+          report_paths: '.build/reports/junit/${{ matrix.test-type }}.xml'
+          check_name: '${{ matrix.test-type }} Test Results (Node ${{ matrix.node-version }})'
+          fail_on_failure: true
+          require_tests: true
+          include_passed: true
