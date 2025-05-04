@@ -4,7 +4,7 @@
 [![Matrix Testing](https://github.com/dwenzel/fe-server/actions/workflows/test-matrix.yml/badge.svg)](https://github.com/dwenzel/fe-server/actions/workflows/test-matrix.yml)
 [![Docker Testing](https://github.com/dwenzel/fe-server/actions/workflows/docker-test.yml/badge.svg)](https://github.com/dwenzel/fe-server/actions/workflows/docker-test.yml)
 [![Coverage](https://img.shields.io/badge/coverage-70%25-yellowgreen.svg)](https://github.com/dwenzel/fe-server/actions/workflows/test.yml)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D%2016.0.0-brightgreen.svg)](https://nodejs.org)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D%2020.0.0-brightgreen.svg)](https://nodejs.org)
 [![License](https://img.shields.io/badge/license-Unlicense-blue.svg)](LICENSE)
 
 An Express.js API to manage pages and items.
@@ -27,8 +27,8 @@ The API provides endpoints to manage pages and items with the following operatio
 
 ### Prerequisites
 
-- Node.js >= 16.0.0
-- npm >= 7.0.0
+- Node.js >= 20.0.0
+- npm >= 9.0.0
 - Docker and Docker Compose (optional, for containerized deployment)
 
 ### Installation
@@ -173,7 +173,7 @@ Coverage reports are available in `.build/reports/coverage/`.
 This project includes GitHub Actions workflows for continuous integration:
 
 - **Standard Testing Workflow** (`test.yml`): Runs unit and functional tests separately, generates coverage reports.
-- **Matrix Testing Workflow** (`test-matrix.yml`): Tests different Node.js versions (18, 20, 22) with both unit and functional tests.
+- **Matrix Testing Workflow** (`test-matrix.yml`): Tests different Node.js versions (20, 22) with both unit and functional tests.
 - **Docker Testing Workflow** (`docker-test.yml`): Runs tests in Docker containers, simulating production environment.
 
 The test results and coverage reports are available as artifacts in GitHub Actions.
