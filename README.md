@@ -1,5 +1,12 @@
 # Pages & Items API
 
+[![Test](https://github.com/dwenzel/fe-server/actions/workflows/test.yml/badge.svg)](https://github.com/dwenzel/fe-server/actions/workflows/test.yml)
+[![Matrix Testing](https://github.com/dwenzel/fe-server/actions/workflows/test-matrix.yml/badge.svg)](https://github.com/dwenzel/fe-server/actions/workflows/test-matrix.yml)
+[![Docker Testing](https://github.com/dwenzel/fe-server/actions/workflows/docker-test.yml/badge.svg)](https://github.com/dwenzel/fe-server/actions/workflows/docker-test.yml)
+[![Coverage](https://img.shields.io/badge/coverage-70%25-yellowgreen.svg)](https://github.com/dwenzel/fe-server/actions/workflows/test.yml)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D%2016.0.0-brightgreen.svg)](https://nodejs.org)
+[![License](https://img.shields.io/badge/license-Unlicense-blue.svg)](LICENSE)
+
 An Express.js API to manage pages and items.
 
 ## API Overview
@@ -102,7 +109,14 @@ See the [OpenAPI specification](./spec/pagesAPI.yaml) for more details.
 
 ## Testing
 
-### Running Tests
+### Test Types
+
+The project has two types of tests:
+
+- **Unit Tests**: Test individual components in isolation
+- **Functional Tests**: Test API endpoints through HTTP requests
+
+### Running All Tests
 
 ```
 make test
@@ -114,27 +128,55 @@ Or:
 npm test
 ```
 
+### Running Specific Test Types
+
+```
+# Run only unit tests
+make test-unit
+
+# Run only functional tests
+make test-functional
+
+# Run tests in Docker containers
+make test-unit-docker
+make test-functional-docker
+```
+
 ### Running Tests in Watch Mode
 
 ```
+# All tests in watch mode
 make test-watch
+
+# Unit tests in watch mode
+make test-unit-watch
+
+# Functional tests in watch mode
+make test-functional-watch
 ```
 
-Or:
+### Test Coverage
 
 ```
-npm run test:watch
+# Generate coverage report for all tests
+make test-coverage
+
+# Generate coverage for specific test types
+npm run test:unit:coverage
+npm run test:functional:coverage
 ```
 
-### Running Specific Tests
+Coverage reports are available in `.build/reports/coverage/`.
 
-```
-make test-pages
-make test-items
-make test-auth
-make test-schema
-make test-integration
-```
+## CI/CD with GitHub Actions
+
+This project includes GitHub Actions workflows for continuous integration:
+
+- **Standard Testing Workflow** (`test.yml`): Runs unit and functional tests separately, generates coverage reports.
+- **Matrix Testing Workflow** (`test-matrix.yml`): Tests different Node.js versions (18, 20, 22) with both unit and functional tests.
+- **Docker Testing Workflow** (`docker-test.yml`): Runs tests in Docker containers, simulating production environment.
+
+The test results and coverage reports are available as artifacts in GitHub Actions.
 
 ## Makefile Commands
 
