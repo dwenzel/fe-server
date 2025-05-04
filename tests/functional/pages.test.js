@@ -1,8 +1,8 @@
 import request from 'supertest';
 import { v4 as uuidv4 } from 'uuid';
-import {expect, test} from "@jest/globals";
+import {expect, test, describe} from "@jest/globals";
 
-// Replace with actual server URL when deployed
+// Replace API_URL and API_KEY with the actual server URL when deployed
 // For local development, you'll need to start the server separately before running tests
 const API_URL = process.env.API_URL || 'http://localhost:8080';
 const API_KEY = process.env.API_KEY || 'test-api-key';

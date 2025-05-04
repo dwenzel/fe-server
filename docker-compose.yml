@@ -23,7 +23,16 @@ services:
       - NODE_ENV=test
       - API_URL=http://api:8080
       - API_KEY=test-api-key
+      - TEST_TYPE=${TEST_TYPE:-all}
     volumes:
       - ./.build/reports:/app/.build/reports
+      - ./tests:/app/tests:ro
+      - ./src:/app/src:ro
     depends_on:
       - api
+    networks:
+      - api-test-network
+
+networks:
+  api-test-network:
+    driver: bridge

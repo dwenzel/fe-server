@@ -1,5 +1,6 @@
 import request from 'supertest';
 import { v4 as uuidv4 } from 'uuid';
+import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 
 // Replace with actual server URL when deployed
 const API_URL = process.env.API_URL || 'http://localhost:8080';

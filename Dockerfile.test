@@ -6,16 +6,22 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
+# Install netcat for health checks
+RUN apk add --no-cache netcat-openbsd
+
 # Copy application files
 COPY . .
 
 # Create test report directory
-RUN mkdir -p .build/reports/junit .build/reports/html
+RUN mkdir -p .build/reports/junit .build/reports/html .build/reports/coverage
+
+# Make wait-for-it script executable
+RUN chmod +x /app/docker/wait-for-it.sh
 
 # Set environment variables
 ENV NODE_ENV=test
 ENV API_URL=http://api:8080
 ENV API_KEY=test-api-key
 
-# Run tests
+# Run tests (wait script will be used if needed)
 CMD ["npm", "test"]
