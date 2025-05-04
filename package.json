@@ -14,7 +14,7 @@
     "test:watch": "jest --config=jest.config.cjs --watch",
     "test:unit:watch": "TEST_TYPE=unit jest --config=jest.config.cjs --watch",
     "test:functional:watch": "TEST_TYPE=functional jest --config=jest.config.cjs --watch",
-    "test:coverage": "jest --config=jest.config.cjs --coverage",
+    "test:coverage": "jest --config=jest.config.cjs --coverage  --coverageDirectory=.build/reports/coverage",
     "test:unit:coverage": "TEST_TYPE=unit jest --config=jest.config.cjs --coverage",
     "test:functional:coverage": "TEST_TYPE=functional jest --config=jest.config.cjs --coverage",
     "lint": "eslint .",

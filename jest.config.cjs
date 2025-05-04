@@ -19,7 +19,13 @@ const baseConfig = {
   extensionsToTreatAsEsm: [],
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
-  }
+  },
+  // Coverage configuration
+  coverageDirectory: '.build/reports/coverage',
+  collectCoverageFrom: [
+    'src/**/*.js',
+    '!**/node_modules/**'
+  ]
 };
 
 // Configuration specific to test type
@@ -78,8 +84,8 @@ const junitReporterConfig = {
     'default',
     ['jest-junit', {
       outputDirectory: './.build/reports/junit',
-      outputName: process.env.TEST_TYPE === 'unit' ? 'unit.xml' : 
-                  process.env.TEST_TYPE === 'functional' ? 'functional.xml' : 
+      outputName: process.env.TEST_TYPE === 'unit' ? 'unit.xml' :
+                  process.env.TEST_TYPE === 'functional' ? 'functional.xml' :
                   'all.xml',
       includeConsoleOutput: true,
       classNameTemplate: '{classname}',
@@ -93,15 +99,15 @@ try {
   require.resolve('jest-html-reporter');
   junitReporterConfig.reporters.push(
     ['jest-html-reporter', {
-      outputPath: process.env.TEST_TYPE === 'unit' ? 
-                  './.build/reports/html/unit-test-report.html' : 
-                  process.env.TEST_TYPE === 'functional' ? 
-                  './.build/reports/html/functional-test-report.html' : 
+      outputPath: process.env.TEST_TYPE === 'unit' ?
+                  './.build/reports/html/unit-test-report.html' :
+                  process.env.TEST_TYPE === 'functional' ?
+                  './.build/reports/html/functional-test-report.html' :
                   './.build/reports/html/all-test-report.html',
-      pageTitle: process.env.TEST_TYPE === 'unit' ? 
-                'Unit Test Report' : 
-                process.env.TEST_TYPE === 'functional' ? 
-                'Functional Test Report' : 
+      pageTitle: process.env.TEST_TYPE === 'unit' ?
+                'Unit Test Report' :
+                process.env.TEST_TYPE === 'functional' ?
+                'Functional Test Report' :
                 'Combined Test Report',
       includeFailureMsg: true,
       includeSuiteFailure: true
@@ -114,13 +120,10 @@ try {
 // Create directory for reports
 const fs = require('fs');
 const dirs = [
-  './.build', 
-  './.build/reports', 
-  './.build/reports/junit', 
-  './.build/reports/html', 
-  './.build/reports/coverage',
-  './.build/reports/coverage/unit',
-  './.build/reports/coverage/functional'
+  './.build',
+  './.build/reports',
+  './.build/reports/junit',
+  './.build/reports/html',
 ];
 
 dirs.forEach(dir => {
