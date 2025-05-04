@@ -15,5 +15,9 @@ module.exports = {
     ],
   ],
   // Add any plugins you might need here
-  plugins: []
+  plugins: [],
+  // Support ESM features
+  assumptions: {
+    superIsCallableConstructor: false,
+  }
 };

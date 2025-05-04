@@ -16,10 +16,13 @@ const baseConfig = {
     API_KEY: process.env.API_KEY || 'test-api-key'
   },
   // Handle ES modules
-  extensionsToTreatAsEsm: [],
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
+  // Transform files with babel to handle import.meta.url
+  transformIgnorePatterns: [
+    '/node_modules/(?!js-yaml|uuid)'
+  ],
   // Coverage configuration
   coverageDirectory: '.build/reports/coverage',
   collectCoverageFrom: [
