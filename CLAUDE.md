@@ -4,8 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-- Run server: `node ./server/index.mjs`
-- Preview: `npm run preview` (uses nitro preview command)
+- Run server: `npm start` or `node src/index.js`
+- Development mode: `npm run dev` (uses nodemon for auto-reload)
 - Run all tests: `npm test`
 - Run unit tests: `npm run test:unit`
 - Run functional tests: `npm run test:functional`
@@ -38,14 +38,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Code Style Guidelines
 
 ### General
-- Project type: Nuxt 3 application with Vue 3
-- Use ES Modules (import/export) syntax
-- Maintain TypeScript type safety
-- Follow Vue 3 Composition API patterns
+- Project type: Node.js Express API server
+- ES Modules (import/export) syntax
+- RESTful API implementation
+- Express middleware pattern for route handling
+- Jest for testing
+- Winston for logging
 
 ### Naming Conventions
-- Components: PascalCase (e.g., `PageView.vue`)
-- Files/directories: kebab-case (e.g., `page-view.ts`)
+- Classes: PascalCase (e.g., `PagesMiddleware`)
+- Files/directories: kebab-case for directories, camelCase for .js files
 - Variables/functions: camelCase
 - Constants: UPPER_SNAKE_CASE
 
