@@ -1,0 +1,69 @@
+{{!-- Page Tree Navigation Partial --}}
+<div class="page-tree">
+  <h3>Site Navigation</h3>
+  <ul class="tree-list">
+    {{#if rootPage}}
+    <li class="tree-item {{#if rootPage.isCurrentPage}}current{{/if}}">
+      <a href="/">{{rootPage.name}}</a>
+      
+      {{#if rootPage.children}}
+      <ul class="tree-children">
+        {{#each rootPage.children}}
+        <li class="tree-item {{#if this.isCurrentPage}}current{{/if}}">
+          <a href="/{{this.slug}}">{{this.name}}</a>
+          
+          {{#if this.children}}
+          <ul class="tree-children">
+            {{#each this.children}}
+            <li class="tree-item {{#if this.isCurrentPage}}current{{/if}}">
+              <a href="/{{../slug}}/{{this.slug}}">{{this.name}}</a>
+            </li>
+            {{/each}}
+          </ul>
+          {{/if}}
+        </li>
+        {{/each}}
+      </ul>
+      {{/if}}
+    </li>
+    {{else}}
+    <li class="tree-item">
+      <em>No pages available</em>
+    </li>
+    {{/if}}
+  </ul>
+</div>
+
+<style>
+  .page-tree {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+  }
+  .tree-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+  .tree-children {
+    list-style: none;
+    padding-left: 1.5rem;
+    margin-top: 0.5rem;
+  }
+  .tree-item {
+    margin-bottom: 0.5rem;
+  }
+  .tree-item.current > a {
+    font-weight: bold;
+    color: #0066cc;
+  }
+  .tree-item a {
+    text-decoration: none;
+    color: #333;
+  }
+  .tree-item a:hover {
+    text-decoration: underline;
+  }
+</style>
