@@ -14,7 +14,7 @@ describe('Schema Validation Tests', () => {
     };
 
     const response = await request(API_URL)
-      .post('/backend/pages')
+      .post('/api/v1/backend/pages')
       .set('X-Api-Key', API_KEY)
       .send(invalidPage);
 
@@ -28,7 +28,7 @@ describe('Schema Validation Tests', () => {
     };
 
     const response = await request(API_URL)
-      .post('/backend/pages')
+      .post('/api/v1/backend/pages')
       .set('X-Api-Key', API_KEY)
       .send(invalidPage);
 
@@ -45,7 +45,7 @@ describe('Schema Validation Tests', () => {
     };
 
     const response = await request(API_URL)
-      .post('/backend/pages')
+      .post('/api/v1/backend/pages')
       .set('X-Api-Key', API_KEY)
       .send(invalidPage);
 
@@ -61,7 +61,7 @@ describe('Schema Validation Tests', () => {
     };
 
     const response = await request(API_URL)
-      .post('/backend/pages')
+      .post('/api/v1/backend/pages')
       .set('X-Api-Key', API_KEY)
       .send(invalidPage);
 
@@ -76,7 +76,7 @@ describe('Schema Validation Tests', () => {
     };
 
     const response = await request(API_URL)
-      .post('/backend/items')
+      .post('/api/v1/backend/items')
       .set('X-Api-Key', API_KEY)
       .send(invalidItem);
 
@@ -92,7 +92,7 @@ describe('Schema Validation Tests', () => {
     };
 
     const response = await request(API_URL)
-      .post('/backend/items')
+      .post('/api/v1/backend/items')
       .set('X-Api-Key', API_KEY)
       .send(invalidItem);
 
@@ -111,7 +111,7 @@ describe('Schema Validation Tests', () => {
     };
 
     const response = await request(API_URL)
-      .post('/backend/items')
+      .post('/api/v1/backend/items')
       .set('X-Api-Key', API_KEY)
       .send(invalidItem);
 
@@ -130,7 +130,7 @@ describe('Schema Validation Tests', () => {
     };
 
     const response = await request(API_URL)
-      .put(`/backend/items/${id}`)
+      .put(`/api/v1/backend/items/${id}`)
       .set('X-Api-Key', API_KEY)
       .send(item);
 

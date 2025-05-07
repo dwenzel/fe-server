@@ -33,15 +33,18 @@ const HOST = config.server.host;
 app.use(cors());
 app.use(bodyParser.json());
 
+// Get API version from config
+const apiVersion = config.api.version;
+
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get(`/api/${apiVersion}/health`, (req, res) => {
   res.status(200).json({ status: 'healthy' });
 });
 
 // API version endpoint
-app.get('/version', (req, res) => {
+app.get(`/api/${apiVersion}/version`, (req, res) => {
   res.status(200).json({
-    version: config.api.version,
+    version: apiVersion,
     server: 'Frontend Server API'
   });
 });
@@ -71,12 +74,12 @@ const determineResponseFormat = (req) => {
   return formatFromQuery || formatFromAccept || 'json';
 };
 
-// Mount API routes with versioning and backend prefix
-app.use('/backend/pages', pagesMiddleware.getRouter());
-app.use('/backend/items', itemsMiddleware.getRouter());
+// Mount API routes with versioning
+app.use(`/api/${apiVersion}/backend/pages`, pagesMiddleware.getRouter());
+app.use(`/api/${apiVersion}/backend/items`, itemsMiddleware.getRouter());
 
 // Public frontend routes for pages
-app.get('/frontend/pages', (req, res) => {
+app.get(`/api/${apiVersion}/frontend/pages`, (req, res) => {
   const pagesArray = Array.from(pagesMiddleware.getDataStore().values());
   
   // Determine format (JSON or HTML)
@@ -120,7 +123,7 @@ const findPageBySlug = (slug) => {
 };
 
 // Route for accessing pages by slug
-app.get('/frontend/pages/by-slug/:slug', (req, res) => {
+app.get(`/api/${apiVersion}/frontend/pages/by-slug/:slug`, (req, res) => {
   const slug = req.params.slug;
   const page = findPageBySlug(slug);
   
@@ -173,7 +176,7 @@ app.get('/frontend/pages/by-slug/:slug', (req, res) => {
 });
 
 // Route for accessing pages by ID
-app.get('/frontend/pages/:id', (req, res) => {
+app.get(`/api/${apiVersion}/frontend/pages/:id`, (req, res) => {
   const id = req.params.id;
   
   if (!pagesMiddleware.hasPage(id)) {
@@ -227,7 +230,7 @@ app.get('/frontend/pages/:id', (req, res) => {
 });
 
 // Public frontend routes for items
-app.get('/frontend/items', (req, res) => {
+app.get(`/api/${apiVersion}/frontend/items`, (req, res) => {
   const itemsArray = Array.from(itemsMiddleware.getDataStore().values());
   
   // Determine format (JSON or HTML)
@@ -262,7 +265,7 @@ app.get('/frontend/items', (req, res) => {
   }
 });
 
-app.get('/frontend/items/:id', (req, res) => {
+app.get(`/api/${apiVersion}/frontend/items/:id`, (req, res) => {
   const id = req.params.id;
   
   const item = itemsMiddleware.getDataStore().get(id);

@@ -46,12 +46,12 @@ describe('OpenAPI Specification Tests', () => {
     test('All endpoints in the OpenAPI spec should be implemented', async () => {
       // Check that all defined endpoints in the spec respond
       const endpointsToTest = [
-        { method: 'post', path: '/backend/pages' },
-        { method: 'put', path: `/backend/pages/${uuidv4()}` },
-        { method: 'delete', path: `/backend/pages/${uuidv4()}` },
-        { method: 'post', path: '/backend/items' },
-        { method: 'put', path: `/backend/items/${uuidv4()}` },
-        { method: 'delete', path: `/backend/items/${uuidv4()}` }
+        { method: 'post', path: '/api/v1/backend/pages' },
+        { method: 'put', path: `/api/v1/backend/pages/${uuidv4()}` },
+        { method: 'delete', path: `/api/v1/backend/pages/${uuidv4()}` },
+        { method: 'post', path: '/api/v1/backend/items' },
+        { method: 'put', path: `/api/v1/backend/items/${uuidv4()}` },
+        { method: 'delete', path: `/api/v1/backend/items/${uuidv4()}` }
       ];
 
       for (const endpoint of endpointsToTest) {
@@ -98,7 +98,7 @@ describe('OpenAPI Specification Tests', () => {
 
       // Test API with valid page
       const response = await request(API_URL)
-        .post('/backend/pages')
+        .post('/api/v1/backend/pages')
         .set('X-Api-Key', API_KEY)
         .send(validPage);
 
@@ -111,7 +111,7 @@ describe('OpenAPI Specification Tests', () => {
         validPageId = uuidv4();
         // Create a page first
         await request(API_URL)
-          .post('/backend/pages')
+          .post('/api/v1/backend/pages')
           .set('X-Api-Key', API_KEY)
           .send({ id: validPageId, name: 'Initial Page' });
       }
@@ -145,7 +145,7 @@ describe('OpenAPI Specification Tests', () => {
 
       // Test API with valid updated page
       const response = await request(API_URL)
-        .put(`/backend/pages/${validPageId}`)
+        .put(`/api/v1/backend/pages/${validPageId}`)
         .set('X-Api-Key', API_KEY)
         .send(updatedPage);
 
@@ -159,7 +159,7 @@ describe('OpenAPI Specification Tests', () => {
         validPageId = uuidv4();
         // Create a page first
         await request(API_URL)
-          .post('/backend/pages')
+          .post('/api/v1/backend/pages')
           .set('X-Api-Key', API_KEY)
           .send({ id: validPageId, name: 'Parent Page' });
       }
@@ -196,7 +196,7 @@ describe('OpenAPI Specification Tests', () => {
 
       // Test API with valid item
       const response = await request(API_URL)
-        .post('/backend/items')
+        .post('/api/v1/backend/items')
         .set('X-Api-Key', API_KEY)
         .send(validItem);
 
@@ -211,12 +211,12 @@ describe('OpenAPI Specification Tests', () => {
         
         // Create a page and item first
         await request(API_URL)
-          .post('/backend/pages')
+          .post('/api/v1/backend/pages')
           .set('X-Api-Key', API_KEY)
           .send({ id: validPageId, name: 'Parent Page' });
           
         await request(API_URL)
-          .post('/backend/items')
+          .post('/api/v1/backend/items')
           .set('X-Api-Key', API_KEY)
           .send({ 
             id: validItemId, 
@@ -258,7 +258,7 @@ describe('OpenAPI Specification Tests', () => {
 
       // Test API with valid updated item
       const response = await request(API_URL)
-        .put(`/backend/items/${validItemId}`)
+        .put(`/api/v1/backend/items/${validItemId}`)
         .set('X-Api-Key', API_KEY)
         .send(updatedItem);
 
@@ -270,13 +270,13 @@ describe('OpenAPI Specification Tests', () => {
     test('Endpoints should require API key authentication', async () => {
       // Test without API key
       const noAuthPageResponse = await request(API_URL)
-        .post('/backend/pages')
+        .post('/api/v1/backend/pages')
         .send({ id: uuidv4(), name: 'Test Page' });
 
       expect(noAuthPageResponse.status).toBe(401);
 
       const noAuthItemResponse = await request(API_URL)
-        .post('/backend/items')
+        .post('/api/v1/backend/items')
         .send({ 
           id: uuidv4(), 
           name: 'Test Item',

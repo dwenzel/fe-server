@@ -11,16 +11,20 @@ The Frontend Server provides different types of URLs to access content:
 
 ## URL Structure
 
+### API Versioning
+
+All API endpoints are prefixed with `/api/{version}/` to allow for future API updates without breaking changes.
+
 ### Backend API URLs
 
 All backend API endpoints require authentication via X-Api-Key header.
 
 | Pattern | Description | Notes |
 |---------|-------------|-------|
-| `/backend/pages` | Create, list pages | POST, GET |
-| `/backend/pages/:id` | Get, update, delete page by ID | GET, PUT, DELETE |
-| `/backend/items` | Create, list items | POST, GET |
-| `/backend/items/:id` | Get, update, delete item by ID | GET, PUT, DELETE |
+| `/api/v1/backend/pages` | Create, list pages | POST, GET |
+| `/api/v1/backend/pages/:id` | Get, update, delete page by ID | GET, PUT, DELETE |
+| `/api/v1/backend/items` | Create, list items | POST, GET |
+| `/api/v1/backend/items/:id` | Get, update, delete item by ID | GET, PUT, DELETE |
 
 ### Frontend URLs
 
@@ -28,11 +32,11 @@ Frontend URLs are public-facing and don't require authentication.
 
 | Pattern | Description | Notes |
 |---------|-------------|-------|
-| `/frontend/pages` | List all pages | Supports HTML/JSON content negotiation |
-| `/frontend/pages/:id` | Get page by ID | UUID-based access, supports HTML/JSON |
-| `/frontend/pages/by-slug/:slug` | Get page by slug | User-friendly URL path segment |
-| `/frontend/items` | List all items | Supports HTML/JSON content negotiation |
-| `/frontend/items/:id` | Get item by ID | UUID-based access, supports HTML/JSON |
+| `/api/v1/frontend/pages` | List all pages | Supports HTML/JSON content negotiation |
+| `/api/v1/frontend/pages/:id` | Get page by ID | UUID-based access, supports HTML/JSON |
+| `/api/v1/frontend/pages/by-slug/:slug` | Get page by slug | User-friendly URL path segment |
+| `/api/v1/frontend/items` | List all items | Supports HTML/JSON content negotiation |
+| `/api/v1/frontend/items/:id` | Get item by ID | UUID-based access, supports HTML/JSON |
 
 ## Slugs and URL Path Segments
 

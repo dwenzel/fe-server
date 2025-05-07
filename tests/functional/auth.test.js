@@ -21,7 +21,7 @@ describe('Authentication Tests', () => {
 
   test('POST /backend/pages - Should reject requests without API key', async () => {
     const response = await request(API_URL)
-      .post('/backend/pages')
+      .post('/api/v1/backend/pages')
       .send(testPage);
 
     expect(response.status).toBe(401);
@@ -29,7 +29,7 @@ describe('Authentication Tests', () => {
 
   test('POST /backend/pages - Should reject requests with invalid API key', async () => {
     const response = await request(API_URL)
-      .post('/backend/pages')
+      .post('/api/v1/backend/pages')
       .set('X-Api-Key', INVALID_API_KEY)
       .send(testPage);
 
@@ -38,7 +38,7 @@ describe('Authentication Tests', () => {
 
   test('POST /backend/pages - Should accept requests with valid API key', async () => {
     const response = await request(API_URL)
-      .post('/backend/pages')
+      .post('/api/v1/backend/pages')
       .set('X-Api-Key', VALID_API_KEY)
       .send(testPage);
 
@@ -47,7 +47,7 @@ describe('Authentication Tests', () => {
 
   test('PUT /backend/pages/{id} - Should reject requests without API key', async () => {
     const response = await request(API_URL)
-      .put(`/backend/pages/${testPage.id}`)
+      .put(`/api/v1/backend/pages/${testPage.id}`)
       .send(testPage);
 
     expect(response.status).toBe(401);
@@ -55,14 +55,14 @@ describe('Authentication Tests', () => {
 
   test('DELETE /backend/pages/{id} - Should reject requests without API key', async () => {
     const response = await request(API_URL)
-      .delete(`/backend/pages/${testPage.id}`);
+      .delete(`/api/v1/backend/pages/${testPage.id}`);
 
     expect(response.status).toBe(401);
   });
 
   test('POST /backend/items - Should reject requests without API key', async () => {
     const response = await request(API_URL)
-      .post('/backend/items')
+      .post('/api/v1/backend/items')
       .send(testItem);
 
     expect(response.status).toBe(401);
@@ -70,7 +70,7 @@ describe('Authentication Tests', () => {
 
   test('PUT /backend/items/{id} - Should reject requests without API key', async () => {
     const response = await request(API_URL)
-      .put(`/backend/items/${testItem.id}`)
+      .put(`/api/v1/backend/items/${testItem.id}`)
       .send(testItem);
 
     expect(response.status).toBe(401);
@@ -78,7 +78,7 @@ describe('Authentication Tests', () => {
 
   test('DELETE /backend/items/{id} - Should reject requests without API key', async () => {
     const response = await request(API_URL)
-      .delete(`/backend/items/${testItem.id}`);
+      .delete(`/api/v1/backend/items/${testItem.id}`);
 
     expect(response.status).toBe(401);
   });

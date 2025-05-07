@@ -31,7 +31,7 @@ describe('Page Slug API', () => {
   beforeAll(async () => {
     // Create the test page
     await request(API_URL)
-      .post('/backend/pages')
+      .post(`/api/${config.api.version}/backend/pages`)
       .set('X-Api-Key', API_KEY)
       .send(testPage);
   });
@@ -40,13 +40,13 @@ describe('Page Slug API', () => {
   afterAll(async () => {
     // Delete the test page
     await request(API_URL)
-      .delete(`/backend/pages/${testPage.id}`)
+      .delete(`/api/${config.api.version}/backend/pages/${testPage.id}`)
       .set('X-Api-Key', API_KEY);
   });
 
   test('should retrieve a page by slug', async () => {
     const response = await request(API_URL)
-      .get(`/frontend/pages/by-slug/${testPage.slug}`)
+      .get(`/api/${config.api.version}/frontend/pages/by-slug/${testPage.slug}`)
       .set('Accept', 'application/json')
       .expect(200);
 
@@ -59,7 +59,7 @@ describe('Page Slug API', () => {
 
   test('should return 404 for non-existent slug', async () => {
     await request(API_URL)
-      .get('/frontend/pages/by-slug/non-existent-slug')
+      .get(`/api/${config.api.version}/frontend/pages/by-slug/non-existent-slug`)
       .set('Accept', 'application/json')
       .expect(404);
   });
@@ -75,7 +75,7 @@ describe('Page Slug API', () => {
     };
 
     const response = await request(API_URL)
-      .post('/backend/pages')
+      .post(`/api/${config.api.version}/backend/pages`)
       .set('X-Api-Key', API_KEY)
       .send(invalidPage)
       .expect(400);
@@ -104,14 +104,14 @@ describe('Page Slug API', () => {
       };
 
       const response = await request(API_URL)
-        .post('/backend/pages')
+        .post(`/api/${config.api.version}/backend/pages`)
         .set('X-Api-Key', API_KEY)
         .send(validPage)
         .expect(201);
 
       // Clean up
       await request(API_URL)
-        .delete(`/backend/pages/${validPage.id}`)
+        .delete(`/api/${config.api.version}/backend/pages/${validPage.id}`)
         .set('X-Api-Key', API_KEY);
     }
   });

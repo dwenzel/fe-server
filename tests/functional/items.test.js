@@ -23,7 +23,7 @@ describe('Items API', () => {
     };
 
     await request(API_URL)
-      .post('/backend/pages')
+      .post('/api/v1/backend/pages')
       .set('X-Api-Key', API_KEY)
       .send(page);
   });
@@ -31,7 +31,7 @@ describe('Items API', () => {
   // Clean up after tests
   afterAll(async () => {
     await request(API_URL)
-      .delete(`/backend/pages/${pageId}`)
+      .delete(`/api/v1/backend/pages/${pageId}`)
       .set('X-Api-Key', API_KEY);
   });
 
@@ -60,7 +60,7 @@ describe('Items API', () => {
     itemId = newItem.id;
 
     const response = await request(API_URL)
-      .post('/backend/items')
+      .post('/api/v1/backend/items')
       .set('X-Api-Key', API_KEY)
       .send(newItem);
 
@@ -74,7 +74,7 @@ describe('Items API', () => {
     };
 
     const response = await request(API_URL)
-      .post('/backend/items')
+      .post('/api/v1/backend/items')
       .set('X-Api-Key', API_KEY)
       .send(invalidItem);
 
@@ -90,7 +90,7 @@ describe('Items API', () => {
     };
 
     const response = await request(API_URL)
-      .post('/backend/items')
+      .post('/api/v1/backend/items')
       .set('X-Api-Key', API_KEY)
       .send(invalidTypeItem);
 
@@ -102,7 +102,7 @@ describe('Items API', () => {
     updatedItem.id = itemId;
 
     const response = await request(API_URL)
-      .put(`/backend/items/${itemId}`)
+      .put(`/api/v1/backend/items/${itemId}`)
       .set('X-Api-Key', API_KEY)
       .send(updatedItem);
 
@@ -112,7 +112,7 @@ describe('Items API', () => {
   test('PUT /backend/items/{id} - Should return 404 for non-existent item', async () => {
     const nonExistentId = uuidv4();
     const response = await request(API_URL)
-      .put(`/backend/items/${nonExistentId}`)
+      .put(`/api/v1/backend/items/${nonExistentId}`)
       .set('X-Api-Key', API_KEY)
       .send({
         ...updatedItem,
@@ -124,7 +124,7 @@ describe('Items API', () => {
 
   test('PUT /backend/items/{id} - Should return 401 without API key', async () => {
     const response = await request(API_URL)
-      .put(`/backend/items/${itemId}`)
+      .put(`/api/v1/backend/items/${itemId}`)
       .send(updatedItem);
 
     expect(response.status).toBe(401);
@@ -132,7 +132,7 @@ describe('Items API', () => {
 
   test('DELETE /backend/items/{id} - Delete an item', async () => {
     const response = await request(API_URL)
-      .delete(`/backend/items/${itemId}`)
+      .delete(`/api/v1/backend/items/${itemId}`)
       .set('X-Api-Key', API_KEY);
 
     expect(response.status).toBe(204);
@@ -140,7 +140,7 @@ describe('Items API', () => {
 
   test('DELETE /backend/items/{id} - Should return 404 for non-existent item', async () => {
     const response = await request(API_URL)
-      .delete(`/backend/items/${itemId}`)
+      .delete(`/api/v1/backend/items/${itemId}`)
       .set('X-Api-Key', API_KEY);
 
     expect(response.status).toBe(404);

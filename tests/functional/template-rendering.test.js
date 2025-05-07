@@ -52,13 +52,13 @@ describe('Template Rendering', () => {
   beforeAll(async () => {
     // Create test page
     await request(API_URL)
-      .post('/backend/pages')
+      .post('/api/v1/backend/pages')
       .set('X-Api-Key', API_KEY)
       .send(testPage);
       
     // Create test item
     await request(API_URL)
-      .post('/backend/items')
+      .post('/api/v1/backend/items')
       .set('X-Api-Key', API_KEY)
       .send(testItem);
   });
@@ -67,12 +67,12 @@ describe('Template Rendering', () => {
   afterAll(async () => {
     // Delete test item
     await request(API_URL)
-      .delete(`/backend/items/${itemId}`)
+      .delete(`/api/v1/backend/items/${itemId}`)
       .set('X-Api-Key', API_KEY);
       
     // Delete test page
     await request(API_URL)
-      .delete(`/backend/pages/${pageId}`)
+      .delete(`/api/v1/backend/pages/${pageId}`)
       .set('X-Api-Key', API_KEY);
   });
 
@@ -80,7 +80,7 @@ describe('Template Rendering', () => {
   describe('HTML Rendering', () => {
     test('GET /frontend/pages with format=html - Should return HTML', async () => {
       const response = await request(API_URL)
-        .get('/frontend/pages?format=html')
+        .get('/api/v1/frontend/pages?format=html')
         .set('Accept', 'text/html');
       
       expect(response.status).toBe(200);
@@ -94,12 +94,12 @@ describe('Template Rendering', () => {
     test('GET /frontend/pages/{id} with format=html - Should return HTML for specific page', async () => {
       // Re-create test page to ensure it exists
       await request(API_URL)
-        .post('/backend/pages')
+        .post('/api/v1/backend/pages')
         .set('X-Api-Key', API_KEY)
         .send(testPage);
         
       const response = await request(API_URL)
-        .get(`/frontend/pages/${pageId}?format=html`)
+        .get(`/api/v1/frontend/pages/${pageId}?format=html`)
         .set('Accept', 'text/html');
       
       expect(response.status).toBe(200);
@@ -110,13 +110,13 @@ describe('Template Rendering', () => {
     test('GET /frontend/items with format=html - Should return HTML', async () => {
       // Re-create test item to ensure it exists
       await request(API_URL)
-        .post('/backend/items')
+        .post('/api/v1/backend/items')
         .set('X-Api-Key', API_KEY)
         .send(testItem);
         
       try {
         const response = await request(API_URL)
-          .get('/frontend/items?format=html')
+          .get('/api/v1/frontend/items?format=html')
           .set('Accept', 'text/html');
         
         expect(response.type).toMatch(/html/);
@@ -132,7 +132,7 @@ describe('Template Rendering', () => {
     test('GET /frontend/items/{id} with format=html - Should return HTML response (even if 404)', async () => {
       // Try to access an item
       const response = await request(API_URL)
-        .get(`/frontend/items/${itemId}?format=html`)
+        .get(`/api/v1/frontend/items/${itemId}?format=html`)
         .set('Accept', 'text/html');
       
       // Accept either a 200 or 404, but verify HTML is returned regardless
@@ -148,7 +148,7 @@ describe('Template Rendering', () => {
     // Test Handlebars
     test('Should render with Handlebars engine when specified', async () => {
       const response = await request(API_URL)
-        .get(`/frontend/pages/${pageId}?format=html&engine=handlebars`)
+        .get(`/api/v1/frontend/pages/${pageId}?format=html&engine=handlebars`)
         .set('Accept', 'text/html');
       
       expect(response.status).toBe(200);
@@ -159,7 +159,7 @@ describe('Template Rendering', () => {
     // Test Pug
     test('Should render with Pug engine when specified', async () => {
       const response = await request(API_URL)
-        .get(`/frontend/pages/${pageId}?format=html&engine=pug`)
+        .get(`/api/v1/frontend/pages/${pageId}?format=html&engine=pug`)
         .set('Accept', 'text/html');
       
       expect(response.status).toBe(200);
@@ -169,7 +169,7 @@ describe('Template Rendering', () => {
     // Test Mustache
     test('Should render with Mustache engine when specified', async () => {
       const response = await request(API_URL)
-        .get(`/frontend/pages/${pageId}?format=html&engine=mustache`)
+        .get(`/api/v1/frontend/pages/${pageId}?format=html&engine=mustache`)
         .set('Accept', 'text/html');
       
       expect(response.status).toBe(200);
@@ -182,7 +182,7 @@ describe('Template Rendering', () => {
     test('Should render an error page for non-existent resources', async () => {
       const nonExistentId = uuidv4();
       const response = await request(API_URL)
-        .get(`/frontend/pages/${nonExistentId}?format=html`)
+        .get(`/api/v1/frontend/pages/${nonExistentId}?format=html`)
         .set('Accept', 'text/html');
       
       expect(response.status).toBe(404);
@@ -198,7 +198,7 @@ describe('Template Rendering', () => {
   describe('Content Negotiation', () => {
     test('Should honor Accept header for HTML', async () => {
       const response = await request(API_URL)
-        .get(`/frontend/pages/${pageId}`)
+        .get(`/api/v1/frontend/pages/${pageId}`)
         .set('Accept', 'text/html');
       
       expect(response.status).toBe(200);
@@ -208,7 +208,7 @@ describe('Template Rendering', () => {
 
     test('Should honor Accept header for JSON', async () => {
       const response = await request(API_URL)
-        .get(`/frontend/pages/${pageId}`)
+        .get(`/api/v1/frontend/pages/${pageId}`)
         .set('Accept', 'application/json');
       
       expect(response.status).toBe(200);
@@ -221,7 +221,7 @@ describe('Template Rendering', () => {
 
     test('Should default to JSON when no format or Accept header is specified', async () => {
       const response = await request(API_URL)
-        .get(`/frontend/pages/${pageId}`);
+        .get(`/api/v1/frontend/pages/${pageId}`);
       
       expect(response.status).toBe(200);
       
