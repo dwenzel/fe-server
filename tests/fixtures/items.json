@@ -1,0 +1,74 @@
+[
+  {
+    "id": "a1b2c3d4-e5f6-4890-abcd-ef1234567890",
+    "parent": "e8fd159b-57c4-4d36-9bd7-a59ca13057bb",
+    "type": "dynamic",
+    "name": "Featured Product",
+    "attributes": {
+      "featured": true,
+      "position": "hero",
+      "status": "Option1"
+    },
+    "content": "Check out our latest featured product with amazing features!"
+  },
+  {
+    "id": "b2c3d4e5-f6a7-4901-bcde-f12345678901",
+    "parent": "c3a9f2a6-8bd4-42fe-8fd5-b1c7a38e0272",
+    "type": "list",
+    "name": "Product Categories",
+    "attributes": {
+      "layout": "grid",
+      "columns": 3,
+      "status": "Option2"
+    },
+    "content": "Browse through our product categories to find what you need."
+  },
+  {
+    "id": "c3d4e5f6-a7b8-4012-9def-123456789012",
+    "parent": "9d6e7f8c-1234-5678-90ab-cdefa1b2c3e4",
+    "type": "news",
+    "name": "Latest Industry News",
+    "attributes": {
+      "date": "2024-05-01",
+      "author": "John Smith",
+      "status": "Option1"
+    },
+    "content": "Read about the latest trends in our industry and how they might affect your business."
+  },
+  {
+    "id": "d4e5f6a7-b8c9-4123-9eff-456789012345",
+    "parent": "c3a9f2a6-8bd4-42fe-8fd5-b1c7a38e0272",
+    "type": "project",
+    "name": "Featured Project",
+    "attributes": {
+      "client": "ACME Corp",
+      "year": 2023,
+      "status": "Option2"
+    },
+    "content": "A case study of our successful implementation for ACME Corporation."
+  },
+  {
+    "id": "e5f6a7b8-c9d0-4234-9fab-567890123456",
+    "parent": "9d6e7f8c-1234-5678-90ab-cdefa1b2c3e4",
+    "type": "event",
+    "name": "Annual Conference",
+    "attributes": {
+      "date": "2024-09-15",
+      "location": "Convention Center",
+      "status": "Option1"
+    },
+    "content": "Join us for our annual industry conference with expert speakers and networking opportunities."
+  },
+  {
+    "id": "f6a7b8c9-d0e1-4345-9abc-678901234567",
+    "parent": "7895d23a-bdfd-4cef-abe8-25b7a148d43c",
+    "type": "dynamic",
+    "name": "Team Members",
+    "attributes": {
+      "layout": "cards",
+      "shuffle": false,
+      "status": "Option2"
+    },
+    "content": "Meet our dedicated team of professionals who work hard to deliver quality products and services."
+  }
+]

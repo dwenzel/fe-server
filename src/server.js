@@ -253,7 +253,7 @@ app.get('/frontend/items/:id', (req, res) => {
 });
 
 // Error handling middleware
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   logger.error(`Unhandled error: ${err.stack}`);
   res.status(500).json({ error: 'Internal server error' });
 });
