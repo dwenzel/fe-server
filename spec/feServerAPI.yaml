@@ -130,6 +130,72 @@ paths:
           description: Unauthorized
         '404':
           description: Item not found
+  /frontend/pages:
+    get:
+      summary: Get all pages (public)
+      description: Public endpoint to retrieve all pages without authentication
+      responses:
+        '200':
+          description: List of pages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Page'
+  /frontend/pages/{id}:
+    get:
+      summary: Get a specific page (public)
+      description: Public endpoint to retrieve a specific page without authentication
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Page details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page'
+        '404':
+          description: Page not found
+  /frontend/items:
+    get:
+      summary: Get all items (public)
+      description: Public endpoint to retrieve all items without authentication
+      responses:
+        '200':
+          description: List of items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+  /frontend/items/{id}:
+    get:
+      summary: Get a specific item (public)
+      description: Public endpoint to retrieve a specific item without authentication
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Item details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '404':
+          description: Item not found
 components:
   securitySchemes:
     ApiKeyAuth:

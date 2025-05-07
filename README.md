@@ -89,21 +89,35 @@ npm start
 
 ## API Documentation
 
-The API requires authentication using an API key provided in the `X-Api-Key` header.
+### Authenticated API
 
-### Endpoints
+The backend API requires authentication using an API key provided in the `X-Api-Key` header.
 
-#### Pages
+#### Backend Pages Endpoints
 
 - `POST /backend/pages` - Create a new page
 - `PUT /backend/pages/{id}` - Update a page
 - `DELETE /backend/pages/{id}` - Delete a page
 
-#### Items
+#### Backend Items Endpoints
 
 - `POST /backend/items` - Create a new item
 - `PUT /backend/items/{id}` - Update an item
 - `DELETE /backend/items/{id}` - Delete an item
+
+### Public API
+
+The frontend API provides public read-only access without authentication.
+
+#### Frontend Pages Endpoints
+
+- `GET /frontend/pages` - Get all pages
+- `GET /frontend/pages/{id}` - Get a specific page
+
+#### Frontend Items Endpoints
+
+- `GET /frontend/items` - Get all items
+- `GET /frontend/items/{id}` - Get a specific item
 
 See the [OpenAPI specification](./spec/feServerAPI.yaml) for more details.
 
