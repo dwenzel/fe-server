@@ -1,0 +1,28 @@
+{{!-- List of items template for Handlebars --}}
+<div class="items-list">
+  <h1>All Items</h1>
+  
+  {{#if items.length}}
+    <div class="items">
+      {{#each items}}
+        <div class="item-listing">
+          <h2><a href="/frontend/items/{{id}}?format=html">{{name}}</a></h2>
+          <p>Type: {{type}}</p>
+          {{#if content}}
+            <div class="item-preview">
+              {{#if content}}
+                {{{content}}}
+              {{/if}}
+            </div>
+          {{/if}}
+          <div class="item-meta">
+            <p>ID: {{id}}</p>
+            <p>Parent: <a href="/frontend/pages/{{parent}}?format=html">{{parent}}</a></p>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  {{else}}
+    <p>No items found.</p>
+  {{/if}}
+</div>

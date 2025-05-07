@@ -1,0 +1,27 @@
+extends ../layouts/main.pug
+
+block content
+  .item
+    h1= name
+    
+    .metadata
+      p Type: #{type}
+      p ID: #{id}
+      p Parent: #{parent}
+    
+    if attributes
+      .attributes
+        h3 Attributes:
+        ul
+          each val, key in attributes
+            li
+              strong= key + ': '
+              span= val
+    
+    if content
+      .content
+        h2 Content:
+        div!= content
+    
+    .actions
+      a(href=`/frontend/pages/${parent}`) Back to Parent

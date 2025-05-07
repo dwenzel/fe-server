@@ -1,0 +1,26 @@
+extends ../layouts/main.pug
+
+block content
+  .items-list
+    h1 All Items
+    
+    if items && items.length
+      .items
+        each item in items
+          .item-listing
+            h2
+              a(href=`/frontend/items/${item.id}?format=html`) #{item.name}
+            p Type: #{item.type}
+            if item.content
+              .item-preview
+                if item.content.length < 100
+                  != item.content
+                else
+                  != item.content.substring(0, 100) + '...'
+            .item-meta
+              p ID: #{item.id}
+              p 
+                | Parent: 
+                a(href=`/frontend/pages/${item.parent}?format=html`) #{item.parent}
+    else
+      p No items found.

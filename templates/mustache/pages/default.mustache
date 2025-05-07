@@ -1,0 +1,44 @@
+{{> header}}
+
+<div class="page">
+  <h1>{{name}}</h1>
+  
+  {{#metadata}}
+  <div class="metadata">
+    {{#description}}
+    <p>{{description}}</p>
+    {{/description}}
+  </div>
+  {{/metadata}}
+  
+  {{#attributes}}
+  <div class="attributes">
+    <h3>Attributes:</h3>
+    <ul>
+      {{#attributes}}
+      <li><strong>{{key}}:</strong> {{value}}</li>
+      {{/attributes}}
+    </ul>
+  </div>
+  {{/attributes}}
+  
+  {{#items}}
+  <div class="items">
+    <h2>Items</h2>
+    {{#items}}
+    <div class="item">
+      <h3>{{name}}</h3>
+      <p>Type: {{type}}</p>
+      {{#content}}
+      <div class="content">{{{content}}}</div>
+      {{/content}}
+    </div>
+    {{/items}}
+  </div>
+  {{/items}}
+  {{^items}}
+  <p>No items found on this page.</p>
+  {{/items}}
+</div>
+
+{{> footer}}

@@ -1,0 +1,78 @@
+[
+  {
+    "id": "e8fd159b-57c4-4d36-9bd7-a59ca13057bb",
+    "name": "Home Page",
+    "attributes": {
+      "layout": "full-width",
+      "featured": true,
+      "priority": 1
+    },
+    "metadata": {
+      "title": "Welcome to Our Website",
+      "description": "The main landing page for our website",
+      "robots": "index,follow",
+      "keywords": ["home", "landing", "main", "welcome"]
+    }
+  },
+  {
+    "id": "7895d23a-bdfd-4cef-abe8-25b7a148d43c",
+    "name": "About Us",
+    "attributes": {
+      "layout": "sidebar",
+      "featured": false,
+      "priority": 2
+    },
+    "metadata": {
+      "title": "About Our Company",
+      "description": "Learn more about our company history and values",
+      "robots": "index,follow",
+      "keywords": ["about", "company", "history", "values"]
+    }
+  },
+  {
+    "id": "c3a9f2a6-8bd4-42fe-8fd5-b1c7a38e0272",
+    "name": "Products",
+    "attributes": {
+      "layout": "grid",
+      "featured": true,
+      "priority": 3
+    },
+    "metadata": {
+      "title": "Our Products",
+      "description": "Browse our collection of products",
+      "robots": "index,follow",
+      "keywords": ["products", "catalog", "browse"]
+    }
+  },
+  {
+    "id": "f4e12b3d-0678-45d3-9101-a23c9f7e1abc",
+    "name": "Contact",
+    "attributes": {
+      "layout": "centered",
+      "featured": false,
+      "priority": 4
+    },
+    "metadata": {
+      "title": "Contact Us",
+      "description": "Get in touch with our team",
+      "robots": "index,follow",
+      "keywords": ["contact", "support", "help"]
+    }
+  },
+  {
+    "id": "9d6e7f8c-1234-5678-90ab-cdefa1b2c3e4",
+    "name": "Blog",
+    "attributes": {
+      "layout": "list",
+      "featured": true,
+      "priority": 5
+    },
+    "parent": "e8fd159b-57c4-4d36-9bd7-a59ca13057bb",
+    "metadata": {
+      "title": "Our Blog",
+      "description": "Latest news and articles",
+      "robots": "index,follow",
+      "keywords": ["blog", "news", "articles"]
+    }
+  }
+]

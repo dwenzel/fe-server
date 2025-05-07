@@ -60,7 +60,8 @@ describe('Frontend Public API', () => {
   describe('Pages Public Endpoints', () => {
     test('GET /frontend/pages - Should return all pages without authentication', async () => {
       const response = await request(API_URL)
-        .get('/frontend/pages');
+        .get('/frontend/pages')
+        .set('Accept', 'application/json');
       
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true);
@@ -73,7 +74,8 @@ describe('Frontend Public API', () => {
 
     test('GET /frontend/pages/{id} - Should return a specific page', async () => {
       const response = await request(API_URL)
-        .get(`/frontend/pages/${pageId}`);
+        .get(`/frontend/pages/${pageId}`)
+        .set('Accept', 'application/json');
       
       expect(response.status).toBe(200);
       expect(response.body.id).toBe(pageId);
@@ -84,7 +86,8 @@ describe('Frontend Public API', () => {
     test('GET /frontend/pages/{id} - Should return 404 for non-existent page', async () => {
       const nonExistentId = uuidv4();
       const response = await request(API_URL)
-        .get(`/frontend/pages/${nonExistentId}`);
+        .get(`/frontend/pages/${nonExistentId}`)
+        .set('Accept', 'application/json');
       
       expect(response.status).toBe(404);
     });
@@ -94,7 +97,8 @@ describe('Frontend Public API', () => {
   describe('Items Public Endpoints', () => {
     test('GET /frontend/items - Should return all items without authentication', async () => {
       const response = await request(API_URL)
-        .get('/frontend/items');
+        .get('/frontend/items')
+        .set('Accept', 'application/json');
       
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true);
@@ -108,7 +112,8 @@ describe('Frontend Public API', () => {
 
     test('GET /frontend/items/{id} - Should return a specific item', async () => {
       const response = await request(API_URL)
-        .get(`/frontend/items/${itemId}`);
+        .get(`/frontend/items/${itemId}`)
+        .set('Accept', 'application/json');
       
       expect(response.status).toBe(200);
       expect(response.body.id).toBe(itemId);
@@ -119,7 +124,8 @@ describe('Frontend Public API', () => {
     test('GET /frontend/items/{id} - Should return 404 for non-existent item', async () => {
       const nonExistentId = uuidv4();
       const response = await request(API_URL)
-        .get(`/frontend/items/${nonExistentId}`);
+        .get(`/frontend/items/${nonExistentId}`)
+        .set('Accept', 'application/json');
       
       expect(response.status).toBe(404);
     });

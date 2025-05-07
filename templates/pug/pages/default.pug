@@ -1,0 +1,31 @@
+extends ../layouts/main.pug
+
+block content
+  .page
+    h1= name
+    
+    if metadata
+      .metadata
+        if metadata.description
+          p= metadata.description
+    
+    if attributes
+      .attributes
+        h3 Attributes:
+        ul
+          each val, key in attributes
+            li
+              strong= key + ': '
+              span= val
+    
+    if items && items.length > 0
+      .items
+        h2 Items
+        each item in items
+          .item
+            h3= item.name
+            p Type: #{item.type}
+            if item.content
+              .content!= item.content
+    else
+      p No items found on this page.

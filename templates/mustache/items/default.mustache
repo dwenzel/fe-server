@@ -1,0 +1,35 @@
+{{> header}}
+
+<div class="item">
+  <h1>{{name}}</h1>
+  
+  <div class="metadata">
+    <p>Type: {{type}}</p>
+    <p>ID: {{id}}</p>
+    <p>Parent: {{parent}}</p>
+  </div>
+  
+  {{#attributes}}
+  <div class="attributes">
+    <h3>Attributes:</h3>
+    <ul>
+      {{#attributes}}
+      <li><strong>{{key}}:</strong> {{value}}</li>
+      {{/attributes}}
+    </ul>
+  </div>
+  {{/attributes}}
+  
+  {{#content}}
+  <div class="content">
+    <h2>Content:</h2>
+    {{{content}}}
+  </div>
+  {{/content}}
+  
+  <div class="actions">
+    <a href="/frontend/pages/{{parent}}">Back to Parent</a>
+  </div>
+</div>
+
+{{> footer}}

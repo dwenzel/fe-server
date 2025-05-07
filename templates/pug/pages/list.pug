@@ -1,0 +1,22 @@
+extends ../layouts/main.pug
+
+block content
+  .pages-list
+    h1 All Pages
+    
+    if pages && pages.length
+      .pages
+        each page in pages
+          .page-item
+            h2
+              a(href=`/frontend/pages/${page.id}?format=html`) #{page.name}
+            if page.metadata && page.metadata.description
+              p= page.metadata.description
+            .page-meta
+              p ID: #{page.id}
+              if page.items && page.items.length
+                p Contains #{page.items.length} item(s)
+              else
+                p No items
+    else
+      p No pages found.
