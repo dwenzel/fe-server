@@ -1,0 +1,94 @@
+name: Feature Branch Testing
+
+on:
+  push:
+    branches: [ feature/** ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/ISSUE_TEMPLATE/**'
+
+permissions:
+  contents: read    # Required for checkout
+  checks: write     # Required for test reports
+  pull-requests: write # Required for comments
+
+jobs:
+  quick-test:
+    name: Quick Feature Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+      - name: Start API server
+        run: |
+          npm start &
+          # Wait for server to start
+          sleep 5
+        env:
+          NODE_ENV: test
+          PORT: 8080
+          API_KEY: test-api-key
+
+      - name: Run functional tests
+        run: npm run test:functional
+        env:
+          API_URL: http://localhost:8080
+          API_KEY: test-api-key
+
+      - name: Check for template engine files
+        id: check_templates
+        run: |
+          if [ -d "src/services/templates" ]; then
+            echo "templates_exist=true" >> $GITHUB_OUTPUT
+          else
+            echo "templates_exist=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run template-specific tests
+        if: steps.check_templates.outputs.templates_exist == 'true'
+        run: npm run test:functional -- --testPathPattern=template-rendering
+        env:
+          API_URL: http://localhost:8080
+          API_KEY: test-api-key
+
+      - name: Create test summary
+        run: |
+          echo "## Feature Branch Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "✅ All tests completed successfully for feature branch" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Test Details" >> $GITHUB_STEP_SUMMARY
+          echo "- Branch: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Run ID: ${{ github.run_id }}" >> $GITHUB_STEP_SUMMARY
+        if: success()
+
+      - name: Create failure summary
+        run: |
+          echo "## Feature Branch Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "❌ Tests failed for feature branch" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Test Details" >> $GITHUB_STEP_SUMMARY
+          echo "- Branch: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Run ID: ${{ github.run_id }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Please check the logs for more details." >> $GITHUB_STEP_SUMMARY
+        if: failure()
