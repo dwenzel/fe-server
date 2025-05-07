@@ -9,8 +9,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import logger from './services/logger.js';
 import config from './config.js';
+import templateConfig from './config/templates.js';
 import PagesMiddleware from './middleware/pages.js';
 import ItemsMiddleware from './middleware/items.js';
+import TemplateRenderer from './services/templates/template-renderer.js';
 
 // Setup directory paths
 const __filename = fileURLToPath(import.meta.url);
@@ -48,6 +50,10 @@ app.get('/version', (req, res) => {
 const pagesMiddleware = new PagesMiddleware(logger);
 const itemsMiddleware = new ItemsMiddleware(logger, pagesMiddleware);
 
+// Create template renderer
+const templateRenderer = new TemplateRenderer(templateConfig, logger);
+templateRenderer.ensureTemplateDirs();
+
 // Mount API routes with versioning and backend prefix
 app.use('/backend/pages', pagesMiddleware.getRouter());
 app.use('/backend/items', itemsMiddleware.getRouter());
@@ -55,7 +61,40 @@ app.use('/backend/items', itemsMiddleware.getRouter());
 // Public frontend routes for pages
 app.get('/frontend/pages', (req, res) => {
   const pagesArray = Array.from(pagesMiddleware.getDataStore().values());
-  res.status(200).json(pagesArray);
+  
+  // Determine format (JSON or HTML)
+  const formatFromQuery = req.query.format;
+  const formatFromAccept = req.accepts(['html', 'json']);
+  logger.info(`Content negotiation - Query format: ${formatFromQuery}, Accept format: ${formatFromAccept}`);
+  const format = formatFromQuery || formatFromAccept || 'json';
+  
+  if (format === 'html') {
+    try {
+      // Transform pages array for template rendering
+      const templateData = {
+        title: 'All Pages',
+        pages: pagesArray,
+        meta: {
+          title: 'All Pages',
+          description: 'List of all pages in the Frontend Server'
+        }
+      };
+      
+      // Render with the appropriate template
+      const html = templateRenderer.renderContent(templateData, 'page', {
+        template: 'pages/list',
+        engine: req.query.engine
+      });
+      
+      res.status(200).type('html').send(html);
+    } catch (error) {
+      logger.error(`Error rendering pages list: ${error.message}`, error);
+      res.status(500).json({ error: 'Failed to render pages list' });
+    }
+  } else {
+    // Default to JSON response
+    res.status(200).json(pagesArray);
+  }
 });
 
 app.get('/frontend/pages/:id', (req, res) => {
@@ -63,17 +102,94 @@ app.get('/frontend/pages/:id', (req, res) => {
   
   if (!pagesMiddleware.hasPage(id)) {
     logger.warn(`Page not found with ID: ${id}`);
-    return res.status(404).json({ error: 'Page not found' });
+    
+    // Decide format for error response
+    const format = req.query.format || req.accepts(['html', 'json']) || 'json';
+    
+    if (format === 'html') {
+      // Render error page
+      try {
+        const html = templateRenderer.renderError('Page not found', 404);
+        return res.status(404).send(html);
+      } catch (error) {
+        logger.error(`Error rendering error page: ${error.message}`, error);
+        return res.status(404).json({ error: 'Page not found' });
+      }
+    } else {
+      return res.status(404).json({ error: 'Page not found' });
+    }
   }
   
   const page = pagesMiddleware.getDataStore().get(id);
-  res.status(200).json(page);
+  
+  // Determine format (JSON or HTML)
+  const formatFromQuery = req.query.format;
+  const formatFromAccept = req.accepts(['html', 'json']);
+  logger.info(`Content negotiation - Query format: ${formatFromQuery}, Accept format: ${formatFromAccept}`);
+  const format = formatFromQuery || formatFromAccept || 'json';
+  
+  if (format === 'html') {
+    try {
+      // Add current date for template
+      const currentYear = new Date().getFullYear();
+      
+      // Render with the appropriate template
+      const html = templateRenderer.renderPage({
+        ...page,
+        currentYear
+      }, {
+        engine: req.query.engine,
+        req
+      });
+      
+      res.status(200).type('html').send(html);
+    } catch (error) {
+      logger.error(`Error rendering page: ${error.message}`, error);
+      res.status(500).json({ error: 'Failed to render page' });
+    }
+  } else {
+    // Default to JSON response
+    res.status(200).json(page);
+  }
 });
 
 // Public frontend routes for items
 app.get('/frontend/items', (req, res) => {
   const itemsArray = Array.from(itemsMiddleware.getDataStore().values());
-  res.status(200).json(itemsArray);
+  
+  // Determine format (JSON or HTML)
+  const formatFromQuery = req.query.format;
+  const formatFromAccept = req.accepts(['html', 'json']);
+  logger.info(`Content negotiation - Query format: ${formatFromQuery}, Accept format: ${formatFromAccept}`);
+  const format = formatFromQuery || formatFromAccept || 'json';
+  
+  if (format === 'html') {
+    try {
+      // Transform items array for template rendering
+      const templateData = {
+        title: 'All Items',
+        items: itemsArray,
+        meta: {
+          title: 'All Items',
+          description: 'List of all items in the Frontend Server'
+        }
+      };
+      
+      // Render with the appropriate template
+      const html = templateRenderer.renderContent(templateData, 'item', {
+        template: 'items/list',
+        engine: req.query.engine
+      });
+      
+      res.status(200).type('html').send(html);
+    } catch (error) {
+      logger.error(`Error rendering items list: ${error.message}`, error);
+      res.status(500).json({ error: 'Failed to render items list' });
+    }
+  } else {
+    // Default to JSON response
+    res.status(200).json(itemsArray);
+  }
 });
 
 app.get('/frontend/items/:id', (req, res) => {
@@ -82,10 +198,53 @@ app.get('/frontend/items/:id', (req, res) => {
   const item = itemsMiddleware.getDataStore().get(id);
   if (!item) {
     logger.warn(`Item not found with ID: ${id}`);
-    return res.status(404).json({ error: 'Item not found' });
+    
+    // Decide format for error response
+    const format = req.query.format || req.accepts(['html', 'json']) || 'json';
+    
+    if (format === 'html') {
+      // Render error page
+      try {
+        const html = templateRenderer.renderError('Item not found', 404);
+        return res.status(404).send(html);
+      } catch (error) {
+        logger.error(`Error rendering error page: ${error.message}`, error);
+        return res.status(404).json({ error: 'Item not found' });
+      }
+    } else {
+      return res.status(404).json({ error: 'Item not found' });
+    }
   }
   
-  res.status(200).json(item);
+  // Determine format (JSON or HTML)
+  const formatFromQuery = req.query.format;
+  const formatFromAccept = req.accepts(['html', 'json']);
+  logger.info(`Content negotiation - Query format: ${formatFromQuery}, Accept format: ${formatFromAccept}`);
+  const format = formatFromQuery || formatFromAccept || 'json';
+  
+  if (format === 'html') {
+    try {
+      // Add current date for template
+      const currentYear = new Date().getFullYear();
+      
+      // Render with the appropriate template
+      const html = templateRenderer.renderItem({
+        ...item,
+        currentYear
+      }, {
+        engine: req.query.engine,
+        req
+      });
+      
+      res.status(200).type('html').send(html);
+    } catch (error) {
+      logger.error(`Error rendering item: ${error.message}`, error);
+      res.status(500).json({ error: 'Failed to render item' });
+    }
+  } else {
+    // Default to JSON response
+    res.status(200).json(item);
+  }
 });
 
 // Error handling middleware

@@ -1,0 +1,40 @@
+{{!-- Default page template for Handlebars --}}
+<div class="page">
+  <h1>{{name}}</h1>
+  
+  {{#if metadata}}
+  <div class="metadata">
+    {{#if metadata.description}}
+    <p>{{metadata.description}}</p>
+    {{/if}}
+  </div>
+  {{/if}}
+  
+  {{#if attributes}}
+  <div class="attributes">
+    <h3>Attributes:</h3>
+    <ul>
+      {{#each attributes}}
+      <li><strong>{{@key}}:</strong> {{this}}</li>
+      {{/each}}
+    </ul>
+  </div>
+  {{/if}}
+  
+  {{#if items}}
+  <div class="items">
+    <h2>Items</h2>
+    {{#each items}}
+    <div class="item">
+      <h3>{{name}}</h3>
+      <p>Type: {{type}}</p>
+      {{#if content}}
+      <div class="content">{{{content}}}</div>
+      {{/if}}
+    </div>
+    {{/each}}
+  </div>
+  {{else}}
+  <p>No items found on this page.</p>
+  {{/if}}
+</div>

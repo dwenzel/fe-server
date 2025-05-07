@@ -1,0 +1,32 @@
+{{!-- Default item template for Handlebars --}}
+<div class="item">
+  <h1>{{name}}</h1>
+  
+  <div class="metadata">
+    <p>Type: {{type}}</p>
+    <p>ID: {{id}}</p>
+    <p>Parent: {{parent}}</p>
+  </div>
+  
+  {{#if attributes}}
+  <div class="attributes">
+    <h3>Attributes:</h3>
+    <ul>
+      {{#each attributes}}
+      <li><strong>{{@key}}:</strong> {{this}}</li>
+      {{/each}}
+    </ul>
+  </div>
+  {{/if}}
+  
+  {{#if content}}
+  <div class="content">
+    <h2>Content:</h2>
+    {{{content}}}
+  </div>
+  {{/if}}
+  
+  <div class="actions">
+    <a href="/frontend/pages/{{parent}}">Back to Parent</a>
+  </div>
+</div>

@@ -1,0 +1,30 @@
+{{> header}}
+
+<div class="items-list">
+  <h1>All Items</h1>
+  
+  {{#items}}
+    <div class="items">
+      {{#items}}
+        <div class="item-listing">
+          <h2><a href="/frontend/items/{{id}}?format=html">{{name}}</a></h2>
+          <p>Type: {{type}}</p>
+          {{#content}}
+            <div class="item-preview">
+              {{{content}}}
+            </div>
+          {{/content}}
+          <div class="item-meta">
+            <p>ID: {{id}}</p>
+            <p>Parent: <a href="/frontend/pages/{{parent}}?format=html">{{parent}}</a></p>
+          </div>
+        </div>
+      {{/items}}
+    </div>
+  {{/items}}
+  {{^items}}
+    <p>No items found.</p>
+  {{/items}}
+</div>
+
+{{> footer}}

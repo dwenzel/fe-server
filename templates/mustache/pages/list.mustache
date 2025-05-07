@@ -1,0 +1,32 @@
+{{> header}}
+
+<div class="pages-list">
+  <h1>All Pages</h1>
+  
+  {{#pages}}
+    <div class="pages">
+      {{#pages}}
+        <div class="page-item">
+          <h2><a href="/frontend/pages/{{id}}?format=html">{{name}}</a></h2>
+          {{#metadata.description}}
+            <p>{{metadata.description}}</p>
+          {{/metadata.description}}
+          <div class="page-meta">
+            <p>ID: {{id}}</p>
+            {{#items}}
+              <p>Contains {{items.length}} item(s)</p>
+            {{/items}}
+            {{^items}}
+              <p>No items</p>
+            {{/items}}
+          </div>
+        </div>
+      {{/pages}}
+    </div>
+  {{/pages}}
+  {{^pages}}
+    <p>No pages found.</p>
+  {{/pages}}
+</div>
+
+{{> footer}}
