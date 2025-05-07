@@ -130,7 +130,7 @@ paths:
           description: Unauthorized
         '404':
           description: Item not found
-  /api/v1/frontend/pages:
+  /api/v1/pages:
     get:
       summary: Get all pages (public)
       description: Public endpoint to retrieve all pages without authentication
@@ -143,12 +143,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Page'
-  /api/v1/frontend/pages/by-slug/{slug}:
+  /{slug_path}:
     get:
-      summary: Get a specific page by slug (public)
-      description: Public endpoint to retrieve a specific page by slug without authentication
+      summary: Get a specific page by slug path (public)
+      description: Public endpoint to retrieve a specific page by hierarchical slug path without authentication
       parameters:
-        - name: slug
+        - name: slug_path
           in: path
           required: true
           schema:
@@ -163,7 +163,7 @@ paths:
                 $ref: '#/components/schemas/Page'
         '404':
           description: Page not found
-  /api/v1/frontend/pages/{id}:
+  /api/v1/pages/{id}:
     get:
       summary: Get a specific page by ID (public)
       description: Public endpoint to retrieve a specific page by ID without authentication
@@ -183,7 +183,7 @@ paths:
                 $ref: '#/components/schemas/Page'
         '404':
           description: Page not found
-  /api/v1/frontend/items:
+  /api/v1/items:
     get:
       summary: Get all items (public)
       description: Public endpoint to retrieve all items without authentication
@@ -196,7 +196,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Item'
-  /api/v1/frontend/items/{id}:
+  /api/v1/items/{id}:
     get:
       summary: Get a specific item (public)
       description: Public endpoint to retrieve a specific item without authentication
@@ -239,6 +239,9 @@ components:
           type: string
           pattern: '^[a-z0-9-_]+$'
           description: The page's URL path segment.
+        isRoot:
+          type: boolean
+          description: Indicates if this is the root page in the hierarchy. Only one root page can exist. Root page must have an empty slug.
         attributes:
           type: object
           additionalProperties:
@@ -251,7 +254,7 @@ components:
         parent:
           type: string
           format: uuid
-          description: The ID of the parent page, if any.
+          description: The ID of the parent page, if any. Not required for the root page.
         metadata:
           $ref: '#/components/schemas/Metadata'
         items:

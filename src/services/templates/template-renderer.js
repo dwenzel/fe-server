@@ -172,6 +172,20 @@ class TemplateRenderer {
       };
     }
 
+    // Add hierarchical page information if this is a page
+    if (content.isRoot !== undefined) {
+      // This is a page object
+      transformed.isCurrentPage = true;
+      
+      // Determine if it's the root page
+      transformed.isRoot = !!content.isRoot;
+      
+      // For non-root pages, include parent info if available
+      if (!transformed.isRoot && content.parent) {
+        transformed.parentPage = options.parentPage || { id: content.parent };
+      }
+    }
+
     return transformed;
   }
 
@@ -224,13 +238,65 @@ class TemplateRenderer {
   }
 
   /**
+   * Prepare page hierarchy data for template rendering
+   * @param {Object} page - Current page
+   * @param {Object} options - Options containing references to the pages middleware
+   * @returns {Object} - Object with hierarchy data
+   */
+  preparePageHierarchy(page, options = {}) {
+    // If no pagesMiddleware is provided in options, we can't build the hierarchy
+    if (!options.pagesMiddleware) {
+      return {};
+    }
+    
+    const pagesMiddleware = options.pagesMiddleware;
+    const rootPage = pagesMiddleware.findRootPage();
+    
+    if (!rootPage) {
+      return {};
+    }
+    
+    // Mark the current page in the hierarchy
+    const currentPageId = page.id;
+    
+    // Build the hierarchy structure starting from the root
+    const buildHierarchy = (pageObj) => {
+      // Mark if this is the current page
+      pageObj.isCurrentPage = pageObj.id === currentPageId;
+      
+      // Get children
+      const children = pagesMiddleware.findChildPages(pageObj.id);
+      
+      if (children.length > 0) {
+        // Process children recursively
+        pageObj.children = children.map(child => buildHierarchy({ ...child }));
+      }
+      
+      return pageObj;
+    };
+    
+    // Start the hierarchy from the root page
+    const hierarchy = {
+      rootPage: buildHierarchy({ ...rootPage })
+    };
+    
+    return hierarchy;
+  }
+
+  /**
    * Render a page
    * @param {Object} page - Page object to render
    * @param {Object} options - Rendering options
    * @returns {string} - Rendered page
    */
   renderPage(page, options = {}) {
-    return this.renderContent(page, 'page', {
+    // Prepare page hierarchy if pagesMiddleware is provided
+    const hierarchyData = this.preparePageHierarchy(page, options);
+    
+    return this.renderContent({
+      ...page,
+      ...hierarchyData
+    }, 'page', {
       errorTemplate: this.config.defaultTemplates.error.default,
       ...options
     });

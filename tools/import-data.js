@@ -89,7 +89,7 @@ try {
  * @returns {Promise<Object>} - Server response
  */
 async function sendToServer(endpoint, data) {
-  const url = `${options.host}:${options.port}/backend/${endpoint}`;
+  const url = `${options.host}:${options.port}/api/v1/backend/${endpoint}`;
   
   try {
     const response = await fetch(url, {

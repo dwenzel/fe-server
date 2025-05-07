@@ -18,18 +18,38 @@ const API_KEY = process.env.API_KEY || 'test-api-key';
 
 describe('Template Rendering', () => {
   // Test data
+  const rootId = uuidv4();
   const pageId = uuidv4();
   const itemId = uuidv4();
   
+  // Create root page
+  const rootPage = {
+    id: rootId,
+    name: 'Root Page',
+    isRoot: true,
+    slug: '',
+    metadata: {
+      title: 'Root Page',
+      description: 'Root page for testing',
+      keywords: ['root', 'test']
+    },
+    attributes: {
+      author: 'Test Author',
+      category: 'Root Category'
+    }
+  };
+  
+  // Create child page
   const testPage = {
     id: pageId,
     name: 'Test Template Page',
+    parent: rootId,
+    slug: 'template-page',
     metadata: {
       title: 'Template Test Page',
       description: 'A test page for template rendering',
       keywords: ['test', 'template', 'rendering']
     },
-    type: 'dynamic',
     attributes: {
       author: 'Test Author',
       category: 'Test Category'
@@ -50,7 +70,13 @@ describe('Template Rendering', () => {
 
   // Setup: Create test page and item using authenticated API
   beforeAll(async () => {
-    // Create test page
+    // Create root page first
+    await request(API_URL)
+      .post('/api/v1/backend/pages')
+      .set('X-Api-Key', API_KEY)
+      .send(rootPage);
+    
+    // Create test page (child of root)
     await request(API_URL)
       .post('/api/v1/backend/pages')
       .set('X-Api-Key', API_KEY)
@@ -70,28 +96,33 @@ describe('Template Rendering', () => {
       .delete(`/api/v1/backend/items/${itemId}`)
       .set('X-Api-Key', API_KEY);
       
-    // Delete test page
+    // Delete test page (child first)
     await request(API_URL)
       .delete(`/api/v1/backend/pages/${pageId}`)
+      .set('X-Api-Key', API_KEY);
+      
+    // Delete root page
+    await request(API_URL)
+      .delete(`/api/v1/backend/pages/${rootId}`)
       .set('X-Api-Key', API_KEY);
   });
 
   // Tests for HTML rendering with different engines
   describe('HTML Rendering', () => {
-    test('GET /frontend/pages with format=html - Should return HTML', async () => {
+    test('GET /api/v1/pages with format=html - Should return HTML', async () => {
       const response = await request(API_URL)
-        .get('/api/v1/frontend/pages?format=html')
+        .get('/api/v1/pages?format=html')
         .set('Accept', 'text/html');
       
       expect(response.status).toBe(200);
       expect(response.type).toMatch(/html/);
       
       // Basic text verification (more resilient)
-      expect(response.text).toMatch(/All Pages/);
+      expect(response.text).toMatch(/Pages/);
       expect(response.text).toMatch(/Test Template Page/);
     });
 
-    test('GET /frontend/pages/{id} with format=html - Should return HTML for specific page', async () => {
+    test('GET /api/v1/pages/{id} with format=html - Should return HTML for specific page', async () => {
       // Re-create test page to ensure it exists
       await request(API_URL)
         .post('/api/v1/backend/pages')
@@ -99,7 +130,7 @@ describe('Template Rendering', () => {
         .send(testPage);
         
       const response = await request(API_URL)
-        .get(`/api/v1/frontend/pages/${pageId}?format=html`)
+        .get(`/api/v1/pages/${pageId}?format=html`)
         .set('Accept', 'text/html');
       
       expect(response.status).toBe(200);
@@ -107,7 +138,7 @@ describe('Template Rendering', () => {
       expect(response.text).toMatch(/Frontend Server/i);
     });
 
-    test('GET /frontend/items with format=html - Should return HTML', async () => {
+    test('GET /api/v1/items with format=html - Should return HTML', async () => {
       // Re-create test item to ensure it exists
       await request(API_URL)
         .post('/api/v1/backend/items')
@@ -116,7 +147,7 @@ describe('Template Rendering', () => {
         
       try {
         const response = await request(API_URL)
-          .get('/api/v1/frontend/items?format=html')
+          .get('/api/v1/items?format=html')
           .set('Accept', 'text/html');
         
         expect(response.type).toMatch(/html/);
@@ -129,10 +160,10 @@ describe('Template Rendering', () => {
       }
     });
 
-    test('GET /frontend/items/{id} with format=html - Should return HTML response (even if 404)', async () => {
+    test('GET /api/v1/items/{id} with format=html - Should return HTML response (even if 404)', async () => {
       // Try to access an item
       const response = await request(API_URL)
-        .get(`/api/v1/frontend/items/${itemId}?format=html`)
+        .get(`/api/v1/items/${itemId}?format=html`)
         .set('Accept', 'text/html');
       
       // Accept either a 200 or 404, but verify HTML is returned regardless
@@ -148,7 +179,7 @@ describe('Template Rendering', () => {
     // Test Handlebars
     test('Should render with Handlebars engine when specified', async () => {
       const response = await request(API_URL)
-        .get(`/api/v1/frontend/pages/${pageId}?format=html&engine=handlebars`)
+        .get(`/api/v1/pages/${pageId}?format=html&engine=handlebars`)
         .set('Accept', 'text/html');
       
       expect(response.status).toBe(200);
@@ -159,7 +190,7 @@ describe('Template Rendering', () => {
     // Test Pug
     test('Should render with Pug engine when specified', async () => {
       const response = await request(API_URL)
-        .get(`/api/v1/frontend/pages/${pageId}?format=html&engine=pug`)
+        .get(`/api/v1/pages/${pageId}?format=html&engine=pug`)
         .set('Accept', 'text/html');
       
       expect(response.status).toBe(200);
@@ -169,7 +200,7 @@ describe('Template Rendering', () => {
     // Test Mustache
     test('Should render with Mustache engine when specified', async () => {
       const response = await request(API_URL)
-        .get(`/api/v1/frontend/pages/${pageId}?format=html&engine=mustache`)
+        .get(`/api/v1/pages/${pageId}?format=html&engine=mustache`)
         .set('Accept', 'text/html');
       
       expect(response.status).toBe(200);
@@ -182,7 +213,7 @@ describe('Template Rendering', () => {
     test('Should render an error page for non-existent resources', async () => {
       const nonExistentId = uuidv4();
       const response = await request(API_URL)
-        .get(`/api/v1/frontend/pages/${nonExistentId}?format=html`)
+        .get(`/api/v1/pages/${nonExistentId}?format=html`)
         .set('Accept', 'text/html');
       
       expect(response.status).toBe(404);
@@ -198,7 +229,7 @@ describe('Template Rendering', () => {
   describe('Content Negotiation', () => {
     test('Should honor Accept header for HTML', async () => {
       const response = await request(API_URL)
-        .get(`/api/v1/frontend/pages/${pageId}`)
+        .get(`/api/v1/pages/${pageId}`)
         .set('Accept', 'text/html');
       
       expect(response.status).toBe(200);
@@ -208,7 +239,7 @@ describe('Template Rendering', () => {
 
     test('Should honor Accept header for JSON', async () => {
       const response = await request(API_URL)
-        .get(`/api/v1/frontend/pages/${pageId}`)
+        .get(`/api/v1/pages/${pageId}`)
         .set('Accept', 'application/json');
       
       expect(response.status).toBe(200);
@@ -221,7 +252,7 @@ describe('Template Rendering', () => {
 
     test('Should default to JSON when no format or Accept header is specified', async () => {
       const response = await request(API_URL)
-        .get(`/api/v1/frontend/pages/${pageId}`);
+        .get(`/api/v1/pages/${pageId}`);
       
       expect(response.status).toBe(200);
       
@@ -231,6 +262,39 @@ describe('Template Rendering', () => {
       } else {
         expect(response.text).toMatch(/Frontend Server/i);
       }
+    });
+  });
+  
+  // Tests for hierarchical slug-based routing
+  describe('Hierarchical Slug Routing', () => {
+    test('Should render page at its slug path', async () => {
+      const response = await request(API_URL)
+        .get(`/template-page`)
+        .set('Accept', 'application/json');
+      
+      expect(response.status).toBe(200);
+      expect(response.body.id).toBe(pageId);
+      expect(response.body.name).toBe('Test Template Page');
+    });
+    
+    test('Should render HTML for page at its slug path with Accept header', async () => {
+      const response = await request(API_URL)
+        .get(`/template-page`)
+        .set('Accept', 'text/html');
+      
+      expect(response.status).toBe(200);
+      expect(response.type).toMatch(/html/);
+      expect(response.text).toMatch(/Template Test Page/i);
+    });
+    
+    test('Root page should be accessible at /', async () => {
+      const response = await request(API_URL)
+        .get(`/`)
+        .set('Accept', 'application/json');
+      
+      expect(response.status).toBe(200);
+      expect(response.body.id).toBe(rootId);
+      expect(response.body.isRoot).toBe(true);
     });
   });
 });

@@ -1,5 +1,11 @@
 {{!-- Default page template for Handlebars --}}
 <div class="page">
+  {{> hierarchical-nav}}
+  
+  {{#if rootPage}}
+  {{> page-tree}}
+  {{/if}}
+  
   <h1>{{name}}</h1>
   
   {{#if metadata}}
