@@ -1,10 +1,9 @@
 /**
  * Template Renderer Service
- * 
+ *
  * Provides a unified interface for rendering templates with different engines.
  */
 import fs from 'fs';
-import path from 'path';
 import HandlebarsAdapter from './handlebars-adapter.js';
 import PugAdapter from './pug-adapter.js';
 import MustacheAdapter from './mustache-adapter.js';
@@ -19,7 +18,7 @@ class TemplateRenderer {
     this.config = config;
     this.logger = logger;
     this.engines = {};
-    
+
     // Initialize the enabled engines
     this.initEngines();
   }
@@ -29,7 +28,7 @@ class TemplateRenderer {
    */
   initEngines() {
     const { enabledEngines = [] } = this.config;
-    
+
     for (const engine of enabledEngines) {
       try {
         this.engines[engine] = this.createEngineAdapter(engine);
@@ -49,13 +48,13 @@ class TemplateRenderer {
     switch (engine) {
       case 'handlebars':
         return new HandlebarsAdapter(this.config, this.logger);
-        
+
       case 'pug':
         return new PugAdapter(this.config, this.logger);
-        
+
       case 'mustache':
         return new MustacheAdapter(this.config, this.logger);
-        
+
       default:
         throw new Error(`Unsupported template engine: ${engine}`);
     }
@@ -66,7 +65,7 @@ class TemplateRenderer {
    */
   ensureTemplateDirs() {
     const { templatePaths } = this.config;
-    
+
     Object.values(templatePaths).forEach(dir => {
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
@@ -86,10 +85,10 @@ class TemplateRenderer {
     if (content.template) {
       return content.template;
     }
-    
+
     // Get the appropriate default template based on content type and content.type
     const type = content.type || 'default';
-    
+
     return this.config.defaultTemplates[contentType][type] ||
            this.config.defaultTemplates[contentType].default;
   }
@@ -106,12 +105,12 @@ class TemplateRenderer {
     if (options.engine && this.engines[options.engine]) {
       return options.engine;
     }
-    
+
     // If content has a specific engine preference, use that
     if (content.preferredEngine && this.engines[content.preferredEngine]) {
       return content.preferredEngine;
     }
-    
+
     // Check if there's a content type mapping
     if (content.type && this.config.contentTypeMap[content.type]) {
       const mappedEngine = this.config.contentTypeMap[content.type];
@@ -119,7 +118,7 @@ class TemplateRenderer {
         return mappedEngine;
       }
     }
-    
+
     // Check template extension
     const extensions = {
       '.hbs': 'handlebars',
@@ -129,13 +128,13 @@ class TemplateRenderer {
       '.mustache': 'mustache',
       '.mu': 'mustache'
     };
-    
+
     for (const [ext, engine] of Object.entries(extensions)) {
       if (templateName.endsWith(ext) && this.engines[engine]) {
         return engine;
       }
     }
-    
+
     // Fall back to default engine
     return this.config.defaultEngine;
   }
@@ -148,7 +147,7 @@ class TemplateRenderer {
    */
   transformData(content, options = {}) {
     // Create a base object with the original content
-    const transformed = { 
+    const transformed = {
       ...content,
       meta: {
         title: content.metadata?.title || content.name || 'Untitled',
@@ -156,14 +155,14 @@ class TemplateRenderer {
         keywords: content.metadata?.keywords || []
       }
     };
-    
+
     // Add rendering helpers
     transformed.helpers = {
       formatDate: (date) => new Date(date).toLocaleDateString(),
       isActive: (path) => path === options.currentPath,
       // Add more helpers as needed
     };
-    
+
     // Add request information if available
     if (options.req) {
       transformed.request = {
@@ -172,7 +171,7 @@ class TemplateRenderer {
         params: options.req.params
       };
     }
-    
+
     return transformed;
   }
 
@@ -186,25 +185,25 @@ class TemplateRenderer {
   renderContent(content, contentType, options = {}) {
     try {
       // Determine which template to use
-      const templateName = options.template || 
+      const templateName = options.template ||
                            this.determineTemplate(content, contentType);
-      
+
       // Determine which engine to use
       const engineName = this.determineEngine(content, templateName, options);
       const engine = this.engines[engineName];
-      
+
       if (!engine) {
         throw new Error(`Template engine not available: ${engineName}`);
       }
-      
+
       // Transform the data for the template
       const transformedData = this.transformData(content, options);
-      
+
       // Render the template
       return engine.render(templateName, transformedData, options);
     } catch (err) {
       this.logger.error(`Error rendering ${contentType}: ${err.message}`, err);
-      
+
       // Attempt to render an error template if specified
       if (options.errorTemplate) {
         try {
@@ -218,7 +217,7 @@ class TemplateRenderer {
           return `<h1>Error rendering ${contentType}</h1><p>${err.message}</p>`;
         }
       }
-      
+
       // No error template specified, rethrow the error
       throw err;
     }
@@ -260,19 +259,19 @@ class TemplateRenderer {
   renderError(error, statusCode = 500, options = {}) {
     const errorMessage = error instanceof Error ? error.message : error;
     const errorStack = error instanceof Error ? error.stack : null;
-    
+
     // Determine which error template to use
-    const templateName = this.config.defaultTemplates.error[statusCode] || 
+    const templateName = this.config.defaultTemplates.error[statusCode] ||
                           this.config.defaultTemplates.error.default;
-    
+
     const engineName = options.engine || this.config.defaultEngine;
     const engine = this.engines[engineName];
-    
+
     if (!engine) {
       // Fallback to a basic HTML error if engine not available
       return `<h1>Error ${statusCode}</h1><p>${errorMessage}</p>`;
     }
-    
+
     try {
       return engine.render(templateName, {
         statusCode,
