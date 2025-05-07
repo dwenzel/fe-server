@@ -54,6 +54,23 @@ const itemsMiddleware = new ItemsMiddleware(logger, pagesMiddleware);
 const templateRenderer = new TemplateRenderer(templateConfig, logger);
 templateRenderer.ensureTemplateDirs();
 
+// Helper function to determine response format
+const determineResponseFormat = (req) => {
+  // Check if explicit JSON format is requested in Accept header
+  if (req.get('Accept') === 'application/json') {
+    return 'json';
+  }
+  
+  // Check query param first, then Accept header
+  const formatFromQuery = req.query.format;
+  const formatFromAccept = req.accepts(['html', 'json']);
+  
+  // Log for debugging
+  logger.info(`Content negotiation - Query format: ${formatFromQuery}, Accept format: ${formatFromAccept}`);
+  
+  return formatFromQuery || formatFromAccept || 'json';
+};
+
 // Mount API routes with versioning and backend prefix
 app.use('/backend/pages', pagesMiddleware.getRouter());
 app.use('/backend/items', itemsMiddleware.getRouter());
@@ -63,10 +80,7 @@ app.get('/frontend/pages', (req, res) => {
   const pagesArray = Array.from(pagesMiddleware.getDataStore().values());
   
   // Determine format (JSON or HTML)
-  const formatFromQuery = req.query.format;
-  const formatFromAccept = req.accepts(['html', 'json']);
-  logger.info(`Content negotiation - Query format: ${formatFromQuery}, Accept format: ${formatFromAccept}`);
-  const format = formatFromQuery || formatFromAccept || 'json';
+  const format = determineResponseFormat(req);
   
   if (format === 'html') {
     try {
@@ -104,7 +118,7 @@ app.get('/frontend/pages/:id', (req, res) => {
     logger.warn(`Page not found with ID: ${id}`);
     
     // Decide format for error response
-    const format = req.query.format || req.accepts(['html', 'json']) || 'json';
+    const format = determineResponseFormat(req);
     
     if (format === 'html') {
       // Render error page
@@ -123,10 +137,7 @@ app.get('/frontend/pages/:id', (req, res) => {
   const page = pagesMiddleware.getDataStore().get(id);
   
   // Determine format (JSON or HTML)
-  const formatFromQuery = req.query.format;
-  const formatFromAccept = req.accepts(['html', 'json']);
-  logger.info(`Content negotiation - Query format: ${formatFromQuery}, Accept format: ${formatFromAccept}`);
-  const format = formatFromQuery || formatFromAccept || 'json';
+  const format = determineResponseFormat(req);
   
   if (format === 'html') {
     try {
@@ -158,10 +169,7 @@ app.get('/frontend/items', (req, res) => {
   const itemsArray = Array.from(itemsMiddleware.getDataStore().values());
   
   // Determine format (JSON or HTML)
-  const formatFromQuery = req.query.format;
-  const formatFromAccept = req.accepts(['html', 'json']);
-  logger.info(`Content negotiation - Query format: ${formatFromQuery}, Accept format: ${formatFromAccept}`);
-  const format = formatFromQuery || formatFromAccept || 'json';
+  const format = determineResponseFormat(req);
   
   if (format === 'html') {
     try {
@@ -200,7 +208,7 @@ app.get('/frontend/items/:id', (req, res) => {
     logger.warn(`Item not found with ID: ${id}`);
     
     // Decide format for error response
-    const format = req.query.format || req.accepts(['html', 'json']) || 'json';
+    const format = determineResponseFormat(req);
     
     if (format === 'html') {
       // Render error page
@@ -217,10 +225,7 @@ app.get('/frontend/items/:id', (req, res) => {
   }
   
   // Determine format (JSON or HTML)
-  const formatFromQuery = req.query.format;
-  const formatFromAccept = req.accepts(['html', 'json']);
-  logger.info(`Content negotiation - Query format: ${formatFromQuery}, Accept format: ${formatFromAccept}`);
-  const format = formatFromQuery || formatFromAccept || 'json';
+  const format = determineResponseFormat(req);
   
   if (format === 'html') {
     try {
