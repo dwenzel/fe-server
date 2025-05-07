@@ -143,10 +143,30 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Page'
+  /frontend/pages/by-slug/{slug}:
+    get:
+      summary: Get a specific page by slug (public)
+      description: Public endpoint to retrieve a specific page by slug without authentication
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-z0-9-_]+$'
+      responses:
+        '200':
+          description: Page details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page'
+        '404':
+          description: Page not found
   /frontend/pages/{id}:
     get:
-      summary: Get a specific page (public)
-      description: Public endpoint to retrieve a specific page without authentication
+      summary: Get a specific page by ID (public)
+      description: Public endpoint to retrieve a specific page by ID without authentication
       parameters:
         - name: id
           in: path
@@ -215,6 +235,10 @@ components:
         name:
           type: string
           description: The page's name.
+        slug:
+          type: string
+          pattern: '^[a-z0-9-_]+$'
+          description: The page's URL path segment.
         attributes:
           type: object
           additionalProperties:

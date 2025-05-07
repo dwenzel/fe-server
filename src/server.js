@@ -111,6 +111,68 @@ app.get('/frontend/pages', (req, res) => {
   }
 });
 
+// Helper function to find a page by slug
+const findPageBySlug = (slug) => {
+  const pages = pagesMiddleware.getDataStore();
+  
+  // Convert to array and find by slug
+  return Array.from(pages.values()).find(page => page.slug === slug);
+};
+
+// Route for accessing pages by slug
+app.get('/frontend/pages/by-slug/:slug', (req, res) => {
+  const slug = req.params.slug;
+  const page = findPageBySlug(slug);
+  
+  if (!page) {
+    logger.warn(`Page not found with slug: ${slug}`);
+    
+    // Decide format for error response
+    const format = determineResponseFormat(req);
+    
+    if (format === 'html') {
+      // Render error page
+      try {
+        const html = templateRenderer.renderError('Page not found', 404);
+        return res.status(404).send(html);
+      } catch (error) {
+        logger.error(`Error rendering error page: ${error.message}`, error);
+        return res.status(404).json({ error: 'Page not found' });
+      }
+    } else {
+      return res.status(404).json({ error: 'Page not found' });
+    }
+  }
+  
+  // Determine format (JSON or HTML)
+  const format = determineResponseFormat(req);
+  
+  if (format === 'html') {
+    try {
+      // Add current date for template
+      const currentYear = new Date().getFullYear();
+      
+      // Render with the appropriate template
+      const html = templateRenderer.renderPage({
+        ...page,
+        currentYear
+      }, {
+        engine: req.query.engine,
+        req
+      });
+      
+      res.status(200).type('html').send(html);
+    } catch (error) {
+      logger.error(`Error rendering page: ${error.message}`, error);
+      res.status(500).json({ error: 'Failed to render page' });
+    }
+  } else {
+    // Default to JSON response
+    res.status(200).json(page);
+  }
+});
+
+// Route for accessing pages by ID
 app.get('/frontend/pages/:id', (req, res) => {
   const id = req.params.id;
   

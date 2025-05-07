@@ -35,6 +35,16 @@ class PagesMiddleware {
       return res.status(400).json({ error: 'Invalid UUID format for parent ID' });
     }
 
+    // Validate slug format if provided
+    if (page.slug && typeof page.slug !== 'string') {
+      return res.status(400).json({ error: 'Slug must be a string' });
+    }
+
+    // Validate slug format (allow only letters, numbers, hyphens, and underscores)
+    if (page.slug && !/^[a-z0-9-_]+$/i.test(page.slug)) {
+      return res.status(400).json({ error: 'Slug can only contain letters, numbers, hyphens, and underscores' });
+    }
+
     // Validate metadata keywords if provided
     if (page.metadata && page.metadata.keywords && !Array.isArray(page.metadata.keywords)) {
       return res.status(400).json({ error: 'Metadata keywords must be an array' });
