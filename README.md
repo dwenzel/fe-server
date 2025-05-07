@@ -1,4 +1,4 @@
-# Pages & Items API
+# Frontend Server
 
 [![Test](https://github.com/dwenzel/fe-server/actions/workflows/test.yml/badge.svg)](https://github.com/dwenzel/fe-server/actions/workflows/test.yml)
 [![Matrix Testing](https://github.com/dwenzel/fe-server/actions/workflows/test-matrix.yml/badge.svg)](https://github.com/dwenzel/fe-server/actions/workflows/test-matrix.yml)
@@ -7,7 +7,7 @@
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D%2020.0.0-brightgreen.svg)](https://nodejs.org)
 [![License](https://img.shields.io/badge/license-Unlicense-blue.svg)](LICENSE)
 
-An Express.js API to manage pages and items.
+An Express.js-based Frontend Server API to manage pages and items.
 
 ## API Overview
 
@@ -35,8 +35,8 @@ The API provides endpoints to manage pages and items with the following operatio
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/pages-items-api.git
-   cd pages-items-api
+   git clone https://github.com/dwenzel/fe-server.git
+   cd fe-server
    ```
 
 2. Install dependencies:
@@ -95,17 +95,17 @@ The API requires authentication using an API key provided in the `X-Api-Key` hea
 
 #### Pages
 
-- `POST /pages` - Create a new page
-- `PUT /pages/{id}` - Update a page
-- `DELETE /pages/{id}` - Delete a page
+- `POST /backend/pages` - Create a new page
+- `PUT /backend/pages/{id}` - Update a page
+- `DELETE /backend/pages/{id}` - Delete a page
 
 #### Items
 
-- `POST /items` - Create a new item
-- `PUT /items/{id}` - Update an item
-- `DELETE /items/{id}` - Delete an item
+- `POST /backend/items` - Create a new item
+- `PUT /backend/items/{id}` - Update an item
+- `DELETE /backend/items/{id}` - Delete an item
 
-See the [OpenAPI specification](./spec/pagesAPI.yaml) for more details.
+See the [OpenAPI specification](./spec/feServerAPI.yaml) for more details.
 
 ## Testing
 

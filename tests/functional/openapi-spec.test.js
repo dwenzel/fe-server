@@ -14,7 +14,7 @@ const API_URL = process.env.API_URL || 'http://localhost:8080';
 const API_KEY = process.env.API_KEY || 'test-api-key';
 
 // Load and parse the OpenAPI spec
-const openApiPath = path.join(__dirname, '../../spec/pagesAPI.yaml');
+const openApiPath = path.join(__dirname, '../../spec/feServerAPI.yaml');
 const openApiSpec = YAML.load(fs.readFileSync(openApiPath, 'utf8'));
 
 // Setup JSON Schema validator
@@ -46,12 +46,12 @@ describe('OpenAPI Specification Tests', () => {
     test('All endpoints in the OpenAPI spec should be implemented', async () => {
       // Check that all defined endpoints in the spec respond
       const endpointsToTest = [
-        { method: 'post', path: '/pages' },
-        { method: 'put', path: `/pages/${uuidv4()}` },
-        { method: 'delete', path: `/pages/${uuidv4()}` },
-        { method: 'post', path: '/items' },
-        { method: 'put', path: `/items/${uuidv4()}` },
-        { method: 'delete', path: `/items/${uuidv4()}` }
+        { method: 'post', path: '/backend/pages' },
+        { method: 'put', path: `/backend/pages/${uuidv4()}` },
+        { method: 'delete', path: `/backend/pages/${uuidv4()}` },
+        { method: 'post', path: '/backend/items' },
+        { method: 'put', path: `/backend/items/${uuidv4()}` },
+        { method: 'delete', path: `/backend/items/${uuidv4()}` }
       ];
 
       for (const endpoint of endpointsToTest) {
@@ -98,7 +98,7 @@ describe('OpenAPI Specification Tests', () => {
 
       // Test API with valid page
       const response = await request(API_URL)
-        .post('/pages')
+        .post('/backend/pages')
         .set('X-Api-Key', API_KEY)
         .send(validPage);
 
@@ -106,12 +106,12 @@ describe('OpenAPI Specification Tests', () => {
       validPageId = validPage.id;
     });
 
-    test('PUT /pages/{id} should conform to Page schema', async () => {
+    test('PUT /backend/pages/{id} should conform to Page schema', async () => {
       if (!validPageId) {
         validPageId = uuidv4();
         // Create a page first
         await request(API_URL)
-          .post('/pages')
+          .post('/backend/pages')
           .set('X-Api-Key', API_KEY)
           .send({ id: validPageId, name: 'Initial Page' });
       }
@@ -145,7 +145,7 @@ describe('OpenAPI Specification Tests', () => {
 
       // Test API with valid updated page
       const response = await request(API_URL)
-        .put(`/pages/${validPageId}`)
+        .put(`/backend/pages/${validPageId}`)
         .set('X-Api-Key', API_KEY)
         .send(updatedPage);
 
@@ -154,12 +154,12 @@ describe('OpenAPI Specification Tests', () => {
   });
 
   describe('Item Schema Conformance', () => {
-    test('POST /items should conform to Item schema', async () => {
+    test('POST /backend/items should conform to Item schema', async () => {
       if (!validPageId) {
         validPageId = uuidv4();
         // Create a page first
         await request(API_URL)
-          .post('/pages')
+          .post('/backend/pages')
           .set('X-Api-Key', API_KEY)
           .send({ id: validPageId, name: 'Parent Page' });
       }
@@ -196,7 +196,7 @@ describe('OpenAPI Specification Tests', () => {
 
       // Test API with valid item
       const response = await request(API_URL)
-        .post('/items')
+        .post('/backend/items')
         .set('X-Api-Key', API_KEY)
         .send(validItem);
 
@@ -204,19 +204,19 @@ describe('OpenAPI Specification Tests', () => {
       validItemId = validItem.id;
     });
 
-    test('PUT /items/{id} should conform to Item schema', async () => {
+    test('PUT /backend/items/{id} should conform to Item schema', async () => {
       if (!validItemId || !validPageId) {
         validItemId = uuidv4();
         validPageId = uuidv4();
         
         // Create a page and item first
         await request(API_URL)
-          .post('/pages')
+          .post('/backend/pages')
           .set('X-Api-Key', API_KEY)
           .send({ id: validPageId, name: 'Parent Page' });
           
         await request(API_URL)
-          .post('/items')
+          .post('/backend/items')
           .set('X-Api-Key', API_KEY)
           .send({ 
             id: validItemId, 
@@ -258,7 +258,7 @@ describe('OpenAPI Specification Tests', () => {
 
       // Test API with valid updated item
       const response = await request(API_URL)
-        .put(`/items/${validItemId}`)
+        .put(`/backend/items/${validItemId}`)
         .set('X-Api-Key', API_KEY)
         .send(updatedItem);
 
@@ -270,13 +270,13 @@ describe('OpenAPI Specification Tests', () => {
     test('Endpoints should require API key authentication', async () => {
       // Test without API key
       const noAuthPageResponse = await request(API_URL)
-        .post('/pages')
+        .post('/backend/pages')
         .send({ id: uuidv4(), name: 'Test Page' });
 
       expect(noAuthPageResponse.status).toBe(401);
 
       const noAuthItemResponse = await request(API_URL)
-        .post('/items')
+        .post('/backend/items')
         .send({ 
           id: uuidv4(), 
           name: 'Test Item',

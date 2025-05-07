@@ -38,9 +38,9 @@ describe('Pages API', () => {
   };
 
   // Tests
-  test('POST /pages - Create a new page', async () => {
+  test('POST /backend/pages - Create a new page', async () => {
     const response = await request(API_URL)
-      .post('/pages')
+      .post('/backend/pages')
       .set('X-Api-Key', API_KEY)
       .send(newPage);
 
@@ -48,19 +48,19 @@ describe('Pages API', () => {
     pageId = newPage.id;
   });
 
-  test('PUT /pages/{id} - Update a page', async () => {
+  test('PUT /backend/pages/{id} - Update a page', async () => {
     const response = await request(API_URL)
-      .put(`/pages/${pageId}`)
+      .put(`/backend/pages/${pageId}`)
       .set('X-Api-Key', API_KEY)
       .send(updatedPage);
 
     expect(response.status).toBe(200);
   });
 
-  test('PUT /pages/{id} - Should return 404 for non-existent page', async () => {
+  test('PUT /backend/pages/{id} - Should return 404 for non-existent page', async () => {
     const nonExistentId = uuidv4();
     const response = await request(API_URL)
-      .put(`/pages/${nonExistentId}`)
+      .put(`/backend/pages/${nonExistentId}`)
       .set('X-Api-Key', API_KEY)
       .send({
         ...updatedPage,
@@ -70,25 +70,25 @@ describe('Pages API', () => {
     expect(response.status).toBe(404);
   });
 
-  test('PUT /pages/{id} - Should return 401 without API key', async () => {
+  test('PUT /backend/pages/{id} - Should return 401 without API key', async () => {
     const response = await request(API_URL)
-      .put(`/pages/${pageId}`)
+      .put(`/backend/pages/${pageId}`)
       .send(updatedPage);
 
     expect(response.status).toBe(401);
   });
 
-  test('DELETE /pages/{id} - Delete a page', async () => {
+  test('DELETE /backend/pages/{id} - Delete a page', async () => {
     const response = await request(API_URL)
-      .delete(`/pages/${pageId}`)
+      .delete(`/backend/pages/${pageId}`)
       .set('X-Api-Key', API_KEY);
 
     expect(response.status).toBe(204);
   });
 
-  test('DELETE /pages/{id} - Should return 404 for non-existent page', async () => {
+  test('DELETE /backend/pages/{id} - Should return 404 for non-existent page', async () => {
     const response = await request(API_URL)
-      .delete(`/pages/${pageId}`)
+      .delete(`/backend/pages/${pageId}`)
       .set('X-Api-Key', API_KEY);
 
     expect(response.status).toBe(404);

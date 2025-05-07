@@ -1,7 +1,7 @@
 {
-  "name": "pages-items-api",
+  "name": "frontend-server",
   "version": "1.0.0",
-  "description": "An API to manage pages & items",
+  "description": "Frontend Server API for managing pages & items",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
@@ -18,8 +18,8 @@
     "test:unit:coverage": "TEST_TYPE=unit jest --config=jest.config.cjs --coverage",
     "test:functional:coverage": "TEST_TYPE=functional jest --config=jest.config.cjs --coverage",
     "lint": "eslint .",
-    "docker:build": "docker build -t pages-items-api .",
-    "docker:run": "docker run -p 8080:8080 pages-items-api"
+    "docker:build": "docker build -t frontend-server .",
+    "docker:run": "docker run -p 8080:8080 frontend-server"
   },
   "keywords": [
     "openapi-generator",

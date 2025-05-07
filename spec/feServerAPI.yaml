@@ -1,10 +1,10 @@
 openapi: 3.0.2
 info:
   version: 1.0.0
-  title: Pages & Items API
-  description: An API to manage pages & items
+  title: Frontend Server API
+  description: An API for the Frontend Server to manage pages & items
 paths:
-  /pages:
+  /backend/pages:
     post:
       summary: Create a new page
       security:
@@ -22,7 +22,7 @@ paths:
           description: Invalid input
         '401':
           description: Unauthorized
-  /pages/{id}:
+  /backend/pages/{id}:
     put:
       summary: Update a page
       security:
@@ -67,7 +67,7 @@ paths:
           description: Unauthorized
         '404':
           description: Page not found
-  /items:
+  /backend/items:
     post:
       summary: Create a new item
       security:
@@ -85,7 +85,7 @@ paths:
           description: Invalid input
         '401':
           description: Unauthorized
-  /items/{id}:
+  /backend/items/{id}:
     put:
       summary: Update an item
       security:

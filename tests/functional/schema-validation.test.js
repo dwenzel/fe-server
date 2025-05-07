@@ -7,35 +7,35 @@ const API_KEY = process.env.API_KEY || 'test-api-key';
 
 describe('Schema Validation Tests', () => {
 
-  test('POST /pages - Should validate required fields', async () => {
+  test('POST /backend/pages - Should validate required fields', async () => {
     const invalidPage = {
       // Missing required id field
       name: 'Invalid Page'
     };
 
     const response = await request(API_URL)
-      .post('/pages')
+      .post('/backend/pages')
       .set('X-Api-Key', API_KEY)
       .send(invalidPage);
 
     expect(response.status).toBe(400);
   });
 
-  test('POST /pages - Should validate field formats', async () => {
+  test('POST /backend/pages - Should validate field formats', async () => {
     const invalidPage = {
       id: 'not-a-uuid', // Invalid UUID format
       name: 'Invalid Page'
     };
 
     const response = await request(API_URL)
-      .post('/pages')
+      .post('/backend/pages')
       .set('X-Api-Key', API_KEY)
       .send(invalidPage);
 
     expect(response.status).toBe(400);
   });
 
-  test('POST /pages - Should validate nested objects', async () => {
+  test('POST /backend/pages - Should validate nested objects', async () => {
     const invalidPage = {
       id: uuidv4(),
       name: 'Invalid Page',
@@ -45,14 +45,14 @@ describe('Schema Validation Tests', () => {
     };
 
     const response = await request(API_URL)
-      .post('/pages')
+      .post('/backend/pages')
       .set('X-Api-Key', API_KEY)
       .send(invalidPage);
 
     expect(response.status).toBe(400);
   });
 
-  test('POST /pages - Should validate parent UUID format', async () => {
+  test('POST /backend/pages - Should validate parent UUID format', async () => {
     const invalidPage = {
       id: uuidv4(),
       name: 'Invalid Parent Page',
@@ -61,14 +61,14 @@ describe('Schema Validation Tests', () => {
     };
 
     const response = await request(API_URL)
-      .post('/pages')
+      .post('/backend/pages')
       .set('X-Api-Key', API_KEY)
       .send(invalidPage);
 
     expect(response.status).toBe(400);
   });
 
-  test('POST /items - Should validate required fields', async () => {
+  test('POST /backend/items - Should validate required fields', async () => {
     const invalidItem = {
       id: uuidv4(),
       name: 'Invalid Item'
@@ -76,14 +76,14 @@ describe('Schema Validation Tests', () => {
     };
 
     const response = await request(API_URL)
-      .post('/items')
+      .post('/backend/items')
       .set('X-Api-Key', API_KEY)
       .send(invalidItem);
 
     expect(response.status).toBe(400);
   });
 
-  test('POST /items - Should validate enum values', async () => {
+  test('POST /backend/items - Should validate enum values', async () => {
     const invalidItem = {
       id: uuidv4(),
       name: 'Invalid Item',
@@ -92,14 +92,14 @@ describe('Schema Validation Tests', () => {
     };
 
     const response = await request(API_URL)
-      .post('/items')
+      .post('/backend/items')
       .set('X-Api-Key', API_KEY)
       .send(invalidItem);
 
     expect(response.status).toBe(400);
   });
 
-  test('POST /items - Should validate attribute values', async () => {
+  test('POST /backend/items - Should validate attribute values', async () => {
     const invalidItem = {
       id: uuidv4(),
       name: 'Invalid Item',
@@ -111,14 +111,14 @@ describe('Schema Validation Tests', () => {
     };
 
     const response = await request(API_URL)
-      .post('/items')
+      .post('/backend/items')
       .set('X-Api-Key', API_KEY)
       .send(invalidItem);
 
     expect(response.status).toBe(400);
   });
 
-  test('PUT /items/{id} - Should reject mismatched IDs', async () => {
+  test('PUT /backend/items/{id} - Should reject mismatched IDs', async () => {
     const id = uuidv4();
     const differentId = uuidv4();
 
@@ -130,7 +130,7 @@ describe('Schema Validation Tests', () => {
     };
 
     const response = await request(API_URL)
-      .put(`/items/${id}`)
+      .put(`/backend/items/${id}`)
       .set('X-Api-Key', API_KEY)
       .send(item);
 

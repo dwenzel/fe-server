@@ -48,20 +48,20 @@ describe('Integration Tests', () => {
     // Try to delete items first
     for (const item of items) {
       await request(API_URL)
-        .delete(`/items/${item.id}`)
+        .delete(`/backend/items/${item.id}`)
         .set('X-Api-Key', API_KEY);
     }
 
     // Then delete the page
     await request(API_URL)
-      .delete(`/pages/${pageId}`)
+      .delete(`/backend/pages/${pageId}`)
       .set('X-Api-Key', API_KEY);
   });
 
   test('Create page and multiple items with parent-child relationships', async () => {
     // 1. Create the page
     const pageResponse = await request(API_URL)
-      .post('/pages')
+      .post('/backend/pages')
       .set('X-Api-Key', API_KEY)
       .send(page);
 
@@ -70,7 +70,7 @@ describe('Integration Tests', () => {
     // 2. Create the first two items
     for (let i = 0; i < 2; i++) {
       const response = await request(API_URL)
-        .post('/items')
+        .post('/backend/items')
         .set('X-Api-Key', API_KEY)
         .send(items[i]);
 
@@ -81,7 +81,7 @@ describe('Integration Tests', () => {
     items[2].parent = items[0].id; // Set the first item as parent
 
     const nestedItemResponse = await request(API_URL)
-      .post('/items')
+      .post('/backend/items')
       .set('X-Api-Key', API_KEY)
       .send(items[2]);
 
@@ -95,7 +95,7 @@ describe('Integration Tests', () => {
     };
 
     const updatePageResponse = await request(API_URL)
-      .put(`/pages/${pageId}`)
+      .put(`/backend/pages/${pageId}`)
       .set('X-Api-Key', API_KEY)
       .send(updatedPage);
 
@@ -105,21 +105,21 @@ describe('Integration Tests', () => {
   test('Delete operations should fail with 404 after items are deleted', async () => {
     // 1. Delete the first item
     const deleteResponse = await request(API_URL)
-      .delete(`/items/${items[0].id}`)
+      .delete(`/backend/items/${items[0].id}`)
       .set('X-Api-Key', API_KEY);
 
     expect(deleteResponse.status).toBe(204);
 
     // 2. Second delete should fail with 404
     const secondDeleteResponse = await request(API_URL)
-      .delete(`/items/${items[0].id}`)
+      .delete(`/backend/items/${items[0].id}`)
       .set('X-Api-Key', API_KEY);
 
     expect(secondDeleteResponse.status).toBe(404);
 
     // 3. Update should also fail with 404
     const updateResponse = await request(API_URL)
-      .put(`/items/${items[0].id}`)
+      .put(`/backend/items/${items[0].id}`)
       .set('X-Api-Key', API_KEY)
       .send(items[0]);
 
@@ -129,12 +129,12 @@ describe('Integration Tests', () => {
   test('API Key validation should be consistent across endpoints', async () => {
     // Check all endpoints require API key
     const endpoints = [
-      { method: 'post', url: '/pages' },
-      { method: 'put', url: `/pages/${pageId}` },
-      { method: 'delete', url: `/pages/${pageId}` },
-      { method: 'post', url: '/items' },
-      { method: 'put', url: `/items/${items[1].id}` },
-      { method: 'delete', url: `/items/${items[1].id}` }
+      { method: 'post', url: '/backend/pages' },
+      { method: 'put', url: `/backend/pages/${pageId}` },
+      { method: 'delete', url: `/backend/pages/${pageId}` },
+      { method: 'post', url: '/backend/items' },
+      { method: 'put', url: `/backend/items/${items[1].id}` },
+      { method: 'delete', url: `/backend/items/${items[1].id}` }
     ];
 
     for (const endpoint of endpoints) {

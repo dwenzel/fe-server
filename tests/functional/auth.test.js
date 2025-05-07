@@ -19,66 +19,66 @@ describe('Authentication Tests', () => {
     type: 'dynamic'
   };
 
-  test('POST /pages - Should reject requests without API key', async () => {
+  test('POST /backend/pages - Should reject requests without API key', async () => {
     const response = await request(API_URL)
-      .post('/pages')
+      .post('/backend/pages')
       .send(testPage);
 
     expect(response.status).toBe(401);
   });
 
-  test('POST /pages - Should reject requests with invalid API key', async () => {
+  test('POST /backend/pages - Should reject requests with invalid API key', async () => {
     const response = await request(API_URL)
-      .post('/pages')
+      .post('/backend/pages')
       .set('X-Api-Key', INVALID_API_KEY)
       .send(testPage);
 
     expect(response.status).toBe(401);
   });
 
-  test('POST /pages - Should accept requests with valid API key', async () => {
+  test('POST /backend/pages - Should accept requests with valid API key', async () => {
     const response = await request(API_URL)
-      .post('/pages')
+      .post('/backend/pages')
       .set('X-Api-Key', VALID_API_KEY)
       .send(testPage);
 
     expect(response.status).toBe(201);
   });
 
-  test('PUT /pages/{id} - Should reject requests without API key', async () => {
+  test('PUT /backend/pages/{id} - Should reject requests without API key', async () => {
     const response = await request(API_URL)
-      .put(`/pages/${testPage.id}`)
+      .put(`/backend/pages/${testPage.id}`)
       .send(testPage);
 
     expect(response.status).toBe(401);
   });
 
-  test('DELETE /pages/{id} - Should reject requests without API key', async () => {
+  test('DELETE /backend/pages/{id} - Should reject requests without API key', async () => {
     const response = await request(API_URL)
-      .delete(`/pages/${testPage.id}`);
+      .delete(`/backend/pages/${testPage.id}`);
 
     expect(response.status).toBe(401);
   });
 
-  test('POST /items - Should reject requests without API key', async () => {
+  test('POST /backend/items - Should reject requests without API key', async () => {
     const response = await request(API_URL)
-      .post('/items')
+      .post('/backend/items')
       .send(testItem);
 
     expect(response.status).toBe(401);
   });
 
-  test('PUT /items/{id} - Should reject requests without API key', async () => {
+  test('PUT /backend/items/{id} - Should reject requests without API key', async () => {
     const response = await request(API_URL)
-      .put(`/items/${testItem.id}`)
+      .put(`/backend/items/${testItem.id}`)
       .send(testItem);
 
     expect(response.status).toBe(401);
   });
 
-  test('DELETE /items/{id} - Should reject requests without API key', async () => {
+  test('DELETE /backend/items/{id} - Should reject requests without API key', async () => {
     const response = await request(API_URL)
-      .delete(`/items/${testItem.id}`);
+      .delete(`/backend/items/${testItem.id}`);
 
     expect(response.status).toBe(401);
   });

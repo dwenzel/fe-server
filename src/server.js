@@ -40,7 +40,7 @@ app.get('/health', (req, res) => {
 app.get('/version', (req, res) => {
   res.status(200).json({
     version: config.api.version,
-    server: 'Pages & Items API'
+    server: 'Frontend Server API'
   });
 });
 
@@ -48,9 +48,9 @@ app.get('/version', (req, res) => {
 const pagesMiddleware = new PagesMiddleware(logger);
 const itemsMiddleware = new ItemsMiddleware(logger, pagesMiddleware);
 
-// Mount API routes with versioning
-app.use('/pages', pagesMiddleware.getRouter());
-app.use('/items', itemsMiddleware.getRouter());
+// Mount API routes with versioning and backend prefix
+app.use('/backend/pages', pagesMiddleware.getRouter());
+app.use('/backend/items', itemsMiddleware.getRouter());
 
 // Error handling middleware
 app.use((err, req, res) => {

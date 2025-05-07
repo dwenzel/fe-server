@@ -38,7 +38,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Code Style Guidelines
 
 ### General
-- Project type: Node.js Express API server
+- Project type: Node.js Express Frontend Server
 - ES Modules (import/export) syntax
 - RESTful API implementation
 - Express middleware pattern for route handling

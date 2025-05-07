@@ -23,7 +23,7 @@ describe('Items API', () => {
     };
 
     await request(API_URL)
-      .post('/pages')
+      .post('/backend/pages')
       .set('X-Api-Key', API_KEY)
       .send(page);
   });
@@ -31,7 +31,7 @@ describe('Items API', () => {
   // Clean up after tests
   afterAll(async () => {
     await request(API_URL)
-      .delete(`/pages/${pageId}`)
+      .delete(`/backend/pages/${pageId}`)
       .set('X-Api-Key', API_KEY);
   });
 
@@ -55,33 +55,33 @@ describe('Items API', () => {
   };
 
   // Tests
-  test('POST /items - Create a new item', async () => {
+  test('POST /backend/items - Create a new item', async () => {
     newItem.parent = pageId;
     itemId = newItem.id;
 
     const response = await request(API_URL)
-      .post('/items')
+      .post('/backend/items')
       .set('X-Api-Key', API_KEY)
       .send(newItem);
 
     expect(response.status).toBe(201);
   });
 
-  test('POST /items - Should return 400 for invalid input', async () => {
+  test('POST /backend/items - Should return 400 for invalid input', async () => {
     const invalidItem = {
       name: 'Invalid Item',
       // Missing required fields: id, parent, type
     };
 
     const response = await request(API_URL)
-      .post('/items')
+      .post('/backend/items')
       .set('X-Api-Key', API_KEY)
       .send(invalidItem);
 
     expect(response.status).toBe(400);
   });
 
-  test('POST /items - Should validate enum type values', async () => {
+  test('POST /backend/items - Should validate enum type values', async () => {
     const invalidTypeItem = {
       id: uuidv4(),
       name: 'Invalid Type Item',
@@ -90,29 +90,29 @@ describe('Items API', () => {
     };
 
     const response = await request(API_URL)
-      .post('/items')
+      .post('/backend/items')
       .set('X-Api-Key', API_KEY)
       .send(invalidTypeItem);
 
     expect(response.status).toBe(400);
   });
 
-  test('PUT /items/{id} - Update an item', async () => {
+  test('PUT /backend/items/{id} - Update an item', async () => {
     updatedItem.parent = pageId;
     updatedItem.id = itemId;
 
     const response = await request(API_URL)
-      .put(`/items/${itemId}`)
+      .put(`/backend/items/${itemId}`)
       .set('X-Api-Key', API_KEY)
       .send(updatedItem);
 
     expect(response.status).toBe(200);
   });
 
-  test('PUT /items/{id} - Should return 404 for non-existent item', async () => {
+  test('PUT /backend/items/{id} - Should return 404 for non-existent item', async () => {
     const nonExistentId = uuidv4();
     const response = await request(API_URL)
-      .put(`/items/${nonExistentId}`)
+      .put(`/backend/items/${nonExistentId}`)
       .set('X-Api-Key', API_KEY)
       .send({
         ...updatedItem,
@@ -122,25 +122,25 @@ describe('Items API', () => {
     expect(response.status).toBe(404);
   });
 
-  test('PUT /items/{id} - Should return 401 without API key', async () => {
+  test('PUT /backend/items/{id} - Should return 401 without API key', async () => {
     const response = await request(API_URL)
-      .put(`/items/${itemId}`)
+      .put(`/backend/items/${itemId}`)
       .send(updatedItem);
 
     expect(response.status).toBe(401);
   });
 
-  test('DELETE /items/{id} - Delete an item', async () => {
+  test('DELETE /backend/items/{id} - Delete an item', async () => {
     const response = await request(API_URL)
-      .delete(`/items/${itemId}`)
+      .delete(`/backend/items/${itemId}`)
       .set('X-Api-Key', API_KEY);
 
     expect(response.status).toBe(204);
   });
 
-  test('DELETE /items/{id} - Should return 404 for non-existent item', async () => {
+  test('DELETE /backend/items/{id} - Should return 404 for non-existent item', async () => {
     const response = await request(API_URL)
-      .delete(`/items/${itemId}`)
+      .delete(`/backend/items/${itemId}`)
       .set('X-Api-Key', API_KEY);
 
     expect(response.status).toBe(404);
