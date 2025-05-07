@@ -10,10 +10,8 @@
           <p>Type: {{type}}</p>
           {{#if content}}
             <div class="item-preview">
-              {{#if (lt content.length 100)}}
+              {{#if content}}
                 {{{content}}}
-              {{else}}
-                {{{truncate content 100}}}...
               {{/if}}
             </div>
           {{/if}}

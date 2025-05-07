@@ -30,7 +30,13 @@ export default {
         // Example helpers
         uppercase: (str) => str.toUpperCase(),
         lowercase: (str) => str.toLowerCase(),
-        json: (obj) => JSON.stringify(obj, null, 2)
+        json: (obj) => JSON.stringify(obj, null, 2),
+        // Comparison helpers
+        lt: (a, b) => a < b,
+        gt: (a, b) => a > b,
+        eq: (a, b) => a === b,
+        // String helpers
+        truncate: (str, len) => (typeof str === 'string' ? (str.length > len ? str.substring(0, len) : str) : '')
       }
     },
     pug: {
