@@ -6,7 +6,7 @@ import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 const API_URL = process.env.API_URL || 'http://localhost:8080';
 const API_KEY = process.env.API_KEY || 'test-api-key';
 
-describe('Items API', () => {
+describe('Items API (old)', () => {
   let pageId, itemId;
 
   // Create a parent page first

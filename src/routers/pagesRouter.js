@@ -5,6 +5,7 @@ import { Router } from 'express';
 import logger from '../services/logger.js';
 import { createSlugResolver } from '../middleware/pages/index.js';
 import { determineResponseFormat } from '../utils/content-negotiation.js';
+import config from '../config.js';
 
 /**
  * Creates and configures the Pages router
@@ -211,9 +212,25 @@ export function createPagesRouter(pagesMiddleware, itemsMiddleware, templateRend
   
   // Generic page rendering function (used by both root and non-root routes)
   const renderResolvedPage = (req, res) => {
+    // Enhanced debug logging
+    logger.debug(`renderResolvedPage handling request path: "${req.path}"`);
+    logger.debug(`Request query params: ${JSON.stringify(req.query)}`);
+    logger.debug(`resolvedPage set: ${req.resolvedPage ? 'YES' : 'NO'}`);
+    
+    if (req.resolvedPage) {
+      logger.debug(`Resolved page details: ID=${req.resolvedPage.id}, slug="${req.resolvedPage.slug}", name="${req.resolvedPage.name}"`);
+    }
+    
     // Check if slug was resolved to a page
     if (!req.resolvedPage) {
       logger.warn(`No page found for path: ${req.path}`);
+      
+      // Log current pages for debugging
+      const pagesArray = Array.from(pagesMiddleware.getDataStore().values());
+      logger.debug(`Available pages (${pagesArray.length}):`);
+      pagesArray.forEach(p => {
+        logger.debug(`  Page: ID=${p.id}, slug="${p.slug}", parent=${p.parent || 'none'}, name="${p.name}"`);
+      });
       
       // Decide format for error response
       const format = determineResponseFormat(req);
@@ -273,7 +290,11 @@ export function createPagesRouter(pagesMiddleware, itemsMiddleware, templateRend
   // Root page route
   pagesRouter.get('/', renderResolvedPage);
   
-  // Non-root page routes (handle all other paths)
+  // Define more specific routes for slug-based paths
+  // This route will catch both first-level and deeper hierarchical paths
+  pagesRouter.get('/:slug*', renderResolvedPage);
+  
+  // Keep this as a fallback, but the more specific routes above should handle most cases
   pagesRouter.use(renderResolvedPage);
   
   // Error handling middleware

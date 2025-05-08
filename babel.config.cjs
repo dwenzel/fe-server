@@ -14,8 +14,11 @@ module.exports = {
       },
     ],
   ],
-  // Add any plugins you might need here
-  plugins: [],
+  // Plugins for test features
+  plugins: [
+    // Add support for import.meta.url in tests
+    '@babel/plugin-syntax-import-meta'
+  ],
   // Support ESM features
   assumptions: {
     superIsCallableConstructor: false,

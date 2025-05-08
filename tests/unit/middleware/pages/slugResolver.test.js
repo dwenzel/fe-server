@@ -45,7 +45,12 @@ describe('Slug Resolver Middleware', () => {
 
       pagesMiddleware = {
         findRootPage: jest.fn(() => mockPages.find(page => page.isRoot)),
-        findChildPages: jest.fn(parentId => mockPages.filter(page => page.parent === parentId))
+        findChildPages: jest.fn(parentId => mockPages.filter(page => page.parent === parentId)),
+        getDataStore: jest.fn(() => {
+          const store = new Map();
+          mockPages.forEach(page => store.set(page.id, page));
+          return store;
+        })
       };
     });
 

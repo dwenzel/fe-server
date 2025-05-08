@@ -7,7 +7,7 @@
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D%2020.0.0-brightgreen.svg)](https://nodejs.org)
 [![License](https://img.shields.io/badge/license-Unlicense-blue.svg)](LICENSE)
 
-An Express.js-based Frontend Server API to manage pages and items.
+An Express.js-based Frontend Server API to manage pages and items, with support for hierarchical routing and multiple template engines.
 
 ## API Overview
 
@@ -121,6 +121,28 @@ The frontend API provides public read-only access without authentication.
 
 See the [OpenAPI specification](./spec/feServerAPI.yaml) for more details.
 
+## Hierarchical Routing and Templates
+
+The server supports hierarchical slug-based routing for pages, allowing pages to be accessed at paths that correspond to their position in the page hierarchy:
+
+- `/` - Root page (with `isRoot: true`)
+- `/about` - First-level page with slug "about"
+- `/about/team` - Second-level page with slug "team" under the "about" page
+- `/products/product-x` - Second-level page under the "products" section
+
+### Template Rendering
+
+The server provides flexible template rendering with support for multiple template engines:
+
+- **Handlebars** - Default template engine
+- **Pug** - Alternative template engine
+- **Mustache** - Alternative template engine
+
+Content can be rendered with a specific engine by adding the `engine` query parameter:
+- `?engine=handlebars`
+- `?engine=pug`
+- `?engine=mustache`
+
 ## Testing
 
 ### Test Types
@@ -128,7 +150,7 @@ See the [OpenAPI specification](./spec/feServerAPI.yaml) for more details.
 The project has two types of tests:
 
 - **Unit Tests**: Test individual components in isolation
-- **Functional Tests**: Test API endpoints through HTTP requests
+- **Functional Tests**: Test API endpoints through HTTP requests, including hierarchical routing and template rendering
 
 ### Running All Tests
 
@@ -168,6 +190,20 @@ make test-unit-watch
 # Functional tests in watch mode
 make test-functional-watch
 ```
+
+### Running Specific Test Files
+
+For tests involving hierarchical routing and template rendering, you may want to run specific test files:
+
+```bash
+# Run hierarchical routing tests
+npx jest tests/functional/hierarchical-routing.test.js
+
+# Run template rendering tests
+npx jest tests/functional/template-rendering.test.js
+```
+
+The tests use a server reset mechanism to ensure proper isolation between tests, allowing them to be run together or individually.
 
 ### Test Coverage
 
