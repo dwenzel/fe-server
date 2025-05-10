@@ -24,8 +24,8 @@ export function createSlugResolver(pagesMiddleware) {
     const fullPath = req.path.split('?')[0];
     
     // Enhanced debugging
-    logger.debug(`Slug resolver processing path: "${fullPath}"`);
-    logger.debug(`Current pages in store: ${Array.from(pagesMiddleware.getDataStore().keys()).join(', ')}`);
+    logger.info(`Slug resolver processing path: "${fullPath}"`);
+    logger.info(`Current pages in store: ${Array.from(pagesMiddleware.getDataStore().keys()).join(', ')}`);
     
     // Root page handling (empty path)
     if (fullPath === '/') {
@@ -41,7 +41,7 @@ export function createSlugResolver(pagesMiddleware) {
     
     // Skip API paths - we only want to resolve slug paths for frontend
     if (fullPath.startsWith('/api/')) {
-      logger.debug(`Skipping API path: ${fullPath}`);
+      logger.info(`Skipping API path: ${fullPath}`);
       return next();
     }
     
@@ -49,7 +49,7 @@ export function createSlugResolver(pagesMiddleware) {
     const slugPath = fullPath;
     const slugSegments = parseSlugPath(slugPath);
     
-    logger.debug(`Parsed slug segments: ${JSON.stringify(slugSegments)}`);
+    logger.info(`Parsed slug segments: ${JSON.stringify(slugSegments)}`);
     
     if (slugSegments.length === 0) {
       // Another way to access the root page
@@ -73,7 +73,7 @@ export function createSlugResolver(pagesMiddleware) {
       }
       
       // Log the root page for debugging
-      logger.debug(`Starting with root page ID: ${currentPage.id}, name: ${currentPage.name}`);
+      logger.info(`Starting with root page ID: ${currentPage.id}, name: ${currentPage.name}`);
       
       // Traverse the hierarchy for each segment
       for (let i = 0; i < slugSegments.length; i++) {
@@ -83,9 +83,9 @@ export function createSlugResolver(pagesMiddleware) {
         const childPages = pagesMiddleware.findChildPages(currentPage.id);
         
         // Log child pages for debugging
-        logger.debug(`Found ${childPages.length} child pages for parent ${currentPage.id}`);
+        logger.info(`Found ${childPages.length} child pages for parent ${currentPage.id}`);
         childPages.forEach(child => {
-          logger.debug(`  Child page: ID=${child.id}, slug="${child.slug}", name="${child.name}"`);
+          logger.info(`  Child page: ID=${child.id}, slug="${child.slug}", name="${child.name}"`);
         });
         
         const matchingPage = childPages.find(page => page.slug === segment);
@@ -96,7 +96,7 @@ export function createSlugResolver(pagesMiddleware) {
           return next();
         }
         
-        logger.debug(`Found matching page for segment "${segment}": ID=${matchingPage.id}, name="${matchingPage.name}"`);
+        logger.info(`Found matching page for segment "${segment}": ID=${matchingPage.id}, name="${matchingPage.name}"`);
         currentPage = matchingPage;
       }
       

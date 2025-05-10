@@ -75,12 +75,18 @@ export async function retryRequest(url, path, method = 'GET', headers = {}, data
  * @returns {Promise<void>}
  */
 export async function setupTestPages(apiUrl, apiKey, pages, testIdentifier = 'setup-test-pages') {
+  console.log(`setupTestPages starting for ${testIdentifier}...`);
+
   // First ensure server is running
-  await ensureServerRunning();
-  
+  console.log('Checking if server is running...');
+  const serverRunning = await ensureServerRunning();
+  console.log(`Server check result: ${serverRunning ? 'running' : 'not running'}`);
+
   // Then trigger a server reset to ensure clean state
+  console.log('Resetting server state...');
   await resetServerState(`setup-${testIdentifier}`);
-  
+  console.log('Server reset completed');
+
   const {
     rootPage,
     aboutPage,

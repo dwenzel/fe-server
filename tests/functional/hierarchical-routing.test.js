@@ -16,24 +16,31 @@ const API_URL = process.env.API_URL || 'http://localhost:8080';
 const API_KEY = process.env.API_KEY || 'test-api-key';
 
 // Increase timeout to allow for server startup and initialization
-jest.setTimeout(30000);
+jest.setTimeout(60000);
 
 describe('Hierarchical Slug-Based Routing', () => {
   // Create the test pages before tests
   beforeAll(async () => {
+    console.log('Starting beforeAll in hierarchical-routing-test...');
     // Setup test pages using helper with specific test identifier
-    await setupTestPages(
-      API_URL, 
-      API_KEY, 
-      { 
-        rootPage, 
-        aboutPage, 
-        teamPage, 
-        productsPage, 
-        productDetailPage 
-      },
-      'hierarchical-routing-tests'
-    );
+    try {
+      await setupTestPages(
+        API_URL,
+        API_KEY,
+        {
+          rootPage,
+          aboutPage,
+          teamPage,
+          productsPage,
+          productDetailPage
+        },
+        'hierarchical-routing-tests'
+      );
+      console.log('Completed beforeAll in hierarchical-routing-test');
+    } catch (error) {
+      console.error('Error in beforeAll:', error);
+      throw error;
+    }
   });
 
   // Clean up after tests
@@ -55,10 +62,12 @@ describe('Hierarchical Slug-Based Routing', () => {
 
   // Add a beforeEach hook to reset server state between tests
   beforeEach(async () => {
+    console.log('Starting beforeEach in hierarchical-routing-test...');
     // Reset server state between tests to ensure consistent behavior
     await resetServerState('hierarchical-routing-test');
     // Allow time for server to fully reinitialize
     await new Promise(resolve => setTimeout(resolve, 500));
+    console.log('Completed beforeEach in hierarchical-routing-test');
   });
 
   test('should serve the root page at /', async () => {

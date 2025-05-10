@@ -33,25 +33,35 @@ export async function isServerRunning(apiUrl = 'http://localhost:8080') {
  */
 export async function ensureServerRunning() {
   const apiUrl = process.env.API_URL || 'http://localhost:8080';
-  
+
   // Check if server is already running
+  console.log(`Checking if server is running at ${apiUrl}...`);
   const running = await isServerRunning(apiUrl);
   if (running) {
     console.log('Server is already running');
     return true;
   }
-  
+
   console.log('Server is not running, attempting to start it...');
-  
+
   // We can't start the server in a child process from within Jest tests
   // Instead we'll warn the user
   console.warn(`WARNING: Server not detected at ${apiUrl}.`);
   console.warn('Please start the server manually with: npm start');
   console.warn('Tests may fail if the server is not running.');
-  
-  // Wait 3 seconds to give user time to see the warning
+
+  // Try checking again after a short delay
+  console.log('Waiting briefly and trying again...');
   await new Promise(resolve => setTimeout(resolve, 3000));
-  
+
+  // Check one more time
+  const retryRunning = await isServerRunning(apiUrl);
+  if (retryRunning) {
+    console.log('Server is now running after retry');
+    return true;
+  }
+
+  console.log('Server still not running after retry');
   return false;
 }
 
@@ -63,21 +73,26 @@ export async function ensureServerRunning() {
  * @returns {Promise<void>}
  */
 export async function resetServerState(testName = 'unknown-test') {
+  console.log(`resetServerState starting for test: ${testName}`);
+
   // Ensure the server is running first
+  console.log('Ensuring server is running before reset...');
   await ensureServerRunning();
-  
+
   // Create data directory if it doesn't exist
   if (!fs.existsSync(dataDir)) {
+    console.log('Creating data directory...');
     fs.mkdirSync(dataDir, { recursive: true });
   }
 
   // Write the current timestamp and test name to the marker file
   // This will trigger the watcher in server.js to reset middleware
-  fs.writeFileSync(
-    resetMarkerPath, 
-    `${new Date().toISOString()} - ${testName}`
-  );
+  const markerContent = `${new Date().toISOString()} - ${testName}`;
+  console.log(`Writing to reset marker: ${markerContent}`);
+  fs.writeFileSync(resetMarkerPath, markerContent);
 
   // Wait for the reset to take effect
+  console.log('Waiting for server reset to take effect...');
   await new Promise(resolve => setTimeout(resolve, 1500));
+  console.log('Reset wait completed');
 }
