@@ -22,7 +22,7 @@ const __dirname = path.dirname(__filename);
 const dataDir = path.join(__dirname, '../data');
 const resetMarkerPath = path.join(dataDir, 'reset-server.marker');
 
-// Create data directory if it doesn't exist
+// Create a data directory if it doesn't exist
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
@@ -88,7 +88,7 @@ setupRouters();
 
 // Watch for reset marker file changes (for testing)
 try {
-  // Create empty marker file if it doesn't exist
+  // Create an empty marker file if it doesn't exist
   if (!fs.existsSync(resetMarkerPath)) {
     fs.writeFileSync(resetMarkerPath, '');
   }

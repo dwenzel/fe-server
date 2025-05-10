@@ -213,12 +213,12 @@ export function createPagesRouter(pagesMiddleware, itemsMiddleware, templateRend
   // Generic page rendering function (used by both root and non-root routes)
   const renderResolvedPage = (req, res) => {
     // Enhanced debug logging
-    logger.debug(`renderResolvedPage handling request path: "${req.path}"`);
-    logger.debug(`Request query params: ${JSON.stringify(req.query)}`);
-    logger.debug(`resolvedPage set: ${req.resolvedPage ? 'YES' : 'NO'}`);
+    logger.info(`renderResolvedPage handling request path: "${req.path}"`);
+    logger.info(`Request query params: ${JSON.stringify(req.query)}`);
+    logger.info(`resolvedPage set: ${req.resolvedPage ? 'YES' : 'NO'}`);
 
     if (req.resolvedPage) {
-      logger.debug(`Resolved page details: ID=${req.resolvedPage.id}, slug="${req.resolvedPage.slug}", name="${req.resolvedPage.name}"`);
+      logger.info(`Resolved page details: ID=${req.resolvedPage.id}, slug="${req.resolvedPage.slug}", name="${req.resolvedPage.name}"`);
     }
 
     // Check if slug was resolved to a page
@@ -227,9 +227,9 @@ export function createPagesRouter(pagesMiddleware, itemsMiddleware, templateRend
 
       // Log current pages for debugging
       const pagesArray = Array.from(pagesMiddleware.getDataStore().values());
-      logger.debug(`Available pages (${pagesArray.length}):`);
+      logger.info(`Available pages (${pagesArray.length}):`);
       pagesArray.forEach(p => {
-        logger.debug(`  Page: ID=${p.id}, slug="${p.slug}", parent=${p.parent || 'none'}, name="${p.name}"`);
+        logger.info(`  Page: ID=${p.id}, slug="${p.slug}", parent=${p.parent || 'none'}, name="${p.name}"`);
       });
 
       // Decide format for error response

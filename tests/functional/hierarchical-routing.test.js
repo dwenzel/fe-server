@@ -3,10 +3,10 @@
  */
 import request from 'supertest';
 import { v4 as uuidv4 } from 'uuid';
-import { expect, describe, test, beforeAll, afterAll } from '@jest/globals';
-import { 
+import { expect, describe, test, beforeAll, afterAll, beforeEach } from '@jest/globals';
+import {
   rootId, aboutId, teamId, productsId, productDetailId,
-  rootPage, aboutPage, teamPage, productsPage, productDetailPage 
+  rootPage, aboutPage, teamPage, productsPage, productDetailPage
 } from '../fixtures/test-pages.js';
 import { retryRequest, setupTestPages, cleanupTestPages } from '../fixtures/test-helpers.js';
 import { resetServerState } from '../fixtures/reset-helper.js';
@@ -47,14 +47,14 @@ describe('Hierarchical Slug-Based Routing', () => {
   afterAll(async () => {
     // Cleanup test pages using helper with specific test identifier
     await cleanupTestPages(
-      API_URL, 
-      API_KEY, 
-      { 
-        rootPage, 
-        aboutPage, 
-        teamPage, 
-        productsPage, 
-        productDetailPage 
+      API_URL,
+      API_KEY,
+      {
+        rootPage,
+        aboutPage,
+        teamPage,
+        productsPage,
+        productDetailPage
       },
       'hierarchical-routing-tests'
     );
@@ -71,12 +71,12 @@ describe('Hierarchical Slug-Based Routing', () => {
   });
 
   test('should serve the root page at /', async () => {
-    const response = await retryRequest(API_URL, '/', 'GET', 
+    const response = await retryRequest(API_URL, '/', 'GET',
       { 'Accept': 'application/json' },
       null,
       10 // Increase max retries for slug resolution
     );
-    
+
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('isRoot', true);
     // If it's our expected root page, verify all properties
@@ -87,74 +87,74 @@ describe('Hierarchical Slug-Based Routing', () => {
       console.log('Got unexpected root page ID:', response.body.id);
     }
   });
-  
+
   test('should resolve first-level slug paths', async () => {
-    const response = await retryRequest(API_URL, '/template-page', 'GET', 
+    const response = await retryRequest(API_URL, '/template-page', 'GET',
       { 'Accept': 'application/json' },
       null,
       10 // Increase max retries for slug resolution
     );
-    
+
     // Now fixed: We expect a 200 response as the slug resolver should work correctly
     expect(response.status).toBe(200);
-    
+
     // Verify the correct page is returned
     expect(response.body).toHaveProperty('slug', 'template-page');
     if (response.body.id === aboutId) {
       expect(response.body).toHaveProperty('name', aboutPage.name);
     }
   });
-  
+
   test('should resolve second-level slug paths', async () => {
-    const response = await retryRequest(API_URL, '/template-page/team', 'GET', 
+    const response = await retryRequest(API_URL, '/template-page/team', 'GET',
       { 'Accept': 'application/json' },
       null,
       10 // Increase max retries for slug resolution
     );
-    
+
     // Now fixed: We expect a 200 response as the slug resolver should work correctly
     expect(response.status).toBe(200);
-    
+
     // Verify the correct page is returned
     expect(response.body).toHaveProperty('slug', 'team');
     if (response.body.id === teamId) {
       expect(response.body).toHaveProperty('name', 'Team Page');
     }
   });
-  
+
   test('should resolve product detail page', async () => {
-    const response = await retryRequest(API_URL, '/products/product-x', 'GET', 
+    const response = await retryRequest(API_URL, '/products/product-x', 'GET',
       { 'Accept': 'application/json' },
       null,
       10 // Increase max retries for slug resolution
     );
-    
+
     // Now fixed: We expect a 200 response as the slug resolver should work correctly
     expect(response.status).toBe(200);
-    
+
     // Verify the correct page is returned
     expect(response.body).toHaveProperty('slug', 'product-x');
     if (response.body.id === productDetailId) {
       expect(response.body).toHaveProperty('name', 'Product X');
     }
   });
-  
+
   test('should return 404 for non-existent slug path', async () => {
-    const response = await retryRequest(API_URL, '/non-existent-path', 'GET', 
+    const response = await retryRequest(API_URL, '/non-existent-path', 'GET',
       { 'Accept': 'application/json' }
     );
-    
+
     expect(response.status).toBe(404);
   });
-  
+
   test('should return 404 for invalid nested path', async () => {
-    const response = await retryRequest(API_URL, '/template-page/non-existent', 'GET', 
+    const response = await retryRequest(API_URL, '/template-page/non-existent', 'GET',
       { 'Accept': 'application/json' }
     );
-    
+
     expect(response.status).toBe(404);
   });
-  
+
   test('should validate slug format in page creation', async () => {
     const invalidPage = {
       id: uuidv4(),

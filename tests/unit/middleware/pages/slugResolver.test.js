@@ -1,6 +1,8 @@
 /**
  * Tests for slug resolver middleware
  */
+import { describe, test, expect, beforeEach, jest } from '@jest/globals';
+
 // Mock the logger
 jest.mock('../../../../src/services/logger.js', () => ({
   info: jest.fn(),

@@ -18,8 +18,8 @@ export const createHealthMiddleware = ({ logger }) => {
    * Health check endpoint for monitoring and testing
    */
   router.get('/', (req, res) => {
-    logger.debug('Health check requested');
-    
+    logger.info('Health check requested');
+
     // Basic health check - return OK status
     return res.status(200).json({
       status: 'ok',
