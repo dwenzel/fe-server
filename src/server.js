@@ -59,7 +59,7 @@ function setupRouters() {
 
   // Remove existing routes if app._router exists
   if (app._router && app._router.stack) {
-    logger.debug('Cleaning up existing router stack before reconfiguration');
+    logger.info('Cleaning up existing router stack before reconfiguration');
     app._router.stack = app._router.stack.filter(layer => {
       return layer.name !== 'router' ||
              (layer.regexp && !layer.regexp.test(`/api/${apiVersion}`) &&
