@@ -4,11 +4,11 @@ block content
   .error
     h1 Error #{statusCode}
     p= message
-    
+
     if stack
       .error-details
         h3 Error Details:
         pre= stack
-    
+
     .actions
-      a(href="/frontend/pages") Back to Pages
+      a(href="/api/v1/pages") Back to Pages

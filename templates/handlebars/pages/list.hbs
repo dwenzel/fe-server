@@ -1,12 +1,12 @@
 {{!-- List of pages template for Handlebars --}}
 <div class="pages-list">
   <h1>All Pages</h1>
-  
+
   {{#if pages.length}}
     <div class="pages">
       {{#each pages}}
         <div class="page-item">
-          <h2><a href="/frontend/pages/{{id}}?format=html">{{name}}</a></h2>
+          <h2><a href="/api/v1/pages/{{id}}?format=html">{{name}}</a></h2>
           {{#if metadata.description}}
             <p>{{metadata.description}}</p>
           {{/if}}
