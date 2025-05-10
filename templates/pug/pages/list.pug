@@ -3,13 +3,13 @@ extends ../layouts/main.pug
 block content
   .pages-list
     h1 All Pages
-    
+
     if pages && pages.length
       .pages
         each page in pages
           .page-item
             h2
-              a(href=`/frontend/pages/${page.id}?format=html`) #{page.name}
+              a(href=`/api/v1/pages/${page.id}?format=html`) #{page.name}
             if page.metadata && page.metadata.description
               p= page.metadata.description
             .page-meta

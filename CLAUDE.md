@@ -29,6 +29,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Functional Tests
 - API integration tests in `tests/functional/` directory
 - Tests the API endpoints with actual HTTP requests
+- Tests for hierarchical routing and template rendering use server reset mechanism for test isolation
+- You can run all tests with: `npm run test:functional`
+- Or run individual test files for better isolation:
+  ```bash
+  npx jest tests/functional/hierarchical-routing.test.js
+  npx jest tests/functional/template-rendering.test.js
+  ```
+
+#### Test Fixtures
+- Shared test data is defined in `tests/fixtures/test-pages.js`
+- Test helper functions in `tests/fixtures/test-helpers.js`
+- Server reset mechanism in `tests/fixtures/reset-helper.js`
+- See documentation in `documentation/testing/test-isolation.md` for details on the test isolation architecture
 
 ### GitHub Actions
 - Workflows defined in `.github/workflows/`

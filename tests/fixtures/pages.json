@@ -2,6 +2,8 @@
   {
     "id": "e8fd159b-57c4-4d36-9bd7-a59ca13057bb",
     "name": "Home Page",
+    "isRoot": true,
+    "slug": "",
     "attributes": {
       "layout": "full-width",
       "featured": true,
@@ -17,6 +19,9 @@
   {
     "id": "7895d23a-bdfd-4cef-abe8-25b7a148d43c",
     "name": "About Us",
+    "isRoot": false,
+    "parent": "e8fd159b-57c4-4d36-9bd7-a59ca13057bb",
+    "slug": "about",
     "attributes": {
       "layout": "sidebar",
       "featured": false,
@@ -32,6 +37,9 @@
   {
     "id": "c3a9f2a6-8bd4-42fe-8fd5-b1c7a38e0272",
     "name": "Products",
+    "isRoot": false,
+    "parent": "e8fd159b-57c4-4d36-9bd7-a59ca13057bb",
+    "slug": "products",
     "attributes": {
       "layout": "grid",
       "featured": true,
@@ -47,6 +55,9 @@
   {
     "id": "f4e12b3d-0678-45d3-9101-a23c9f7e1abc",
     "name": "Contact",
+    "isRoot": false,
+    "parent": "e8fd159b-57c4-4d36-9bd7-a59ca13057bb",
+    "slug": "contact",
     "attributes": {
       "layout": "centered",
       "featured": false,
@@ -62,6 +73,8 @@
   {
     "id": "9d6e7f8c-1234-5678-90ab-cdefa1b2c3e4",
     "name": "Blog",
+    "isRoot": false,
+    "slug": "blog",
     "attributes": {
       "layout": "list",
       "featured": true,
@@ -73,6 +86,42 @@
       "description": "Latest news and articles",
       "robots": "index,follow",
       "keywords": ["blog", "news", "articles"]
+    }
+  },
+  {
+    "id": "a1b2c3d4-e5f6-4890-abcd-ef1234567890",
+    "name": "Product Detail",
+    "isRoot": false,
+    "slug": "product-detail",
+    "attributes": {
+      "layout": "detail",
+      "featured": false,
+      "priority": 1
+    },
+    "parent": "c3a9f2a6-8bd4-42fe-8fd5-b1c7a38e0272",
+    "metadata": {
+      "title": "Product Detail",
+      "description": "Detailed information about our product",
+      "robots": "index,follow",
+      "keywords": ["product", "detail", "specification"]
+    }
+  },
+  {
+    "id": "b2c3d4e5-f6a7-4901-bcde-f12345678901",
+    "name": "Blog Post",
+    "isRoot": false,
+    "slug": "blog-post",
+    "attributes": {
+      "layout": "article",
+      "featured": true,
+      "priority": 1
+    },
+    "parent": "9d6e7f8c-1234-5678-90ab-cdefa1b2c3e4",
+    "metadata": {
+      "title": "Sample Blog Post",
+      "description": "An example blog post",
+      "robots": "index,follow",
+      "keywords": ["blog", "post", "example"]
     }
   }
 ]

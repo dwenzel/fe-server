@@ -70,5 +70,27 @@
       "status": "Option2"
     },
     "content": "Meet our dedicated team of professionals who work hard to deliver quality products and services."
+  },
+  {
+    "id": "a7b8c9d0-e1f2-4456-9bcd-789012345678",
+    "parent": "a1b2c3d4-e5f6-4890-abcd-ef1234567890",
+    "type": "dynamic",
+    "name": "Product Specifications",
+    "attributes": {
+      "layout": "table",
+      "status": "Option1"
+    },
+    "content": "Detailed specifications of our product, including dimensions, materials, and technical details."
+  },
+  {
+    "id": "b8c9d0e1-f2a3-4567-9cde-890123456789",
+    "parent": "b2c3d4e5-f6a7-4901-bcde-f12345678901",
+    "type": "dynamic",
+    "name": "Blog Content",
+    "attributes": {
+      "layout": "article",
+      "status": "Option1"
+    },
+    "content": "<h2>Our Latest Article</h2><p>This is a sample blog post content with <strong>formatting</strong> and <em>emphasis</em>.</p><p>The blog covers various topics related to our industry and products.</p>"
   }
 ]

@@ -8,6 +8,7 @@ This directory contains JSON fixtures used for testing the API endpoints.
 Contains sample page objects with the following structure:
 - `id`: UUID for the page
 - `name`: Display name of the page
+- `slug`: (Optional) URL path segment for the page
 - `attributes`: Object containing page attributes
 - `metadata`: SEO and page metadata
 - `parent`: (Optional) Parent page UUID

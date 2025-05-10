@@ -111,10 +111,10 @@ class PugAdapter {
    * @param {Object} options - Rendering options
    * @returns {string} - Rendered template
    */
-  render(templateName, data, options = {}) {
+  render(templateName, data) {
     try {
       const template = this.getCompiledTemplate(templateName);
-      
+
       // Check if the template already has an extends clause (layout)
       return template({
         ...data,

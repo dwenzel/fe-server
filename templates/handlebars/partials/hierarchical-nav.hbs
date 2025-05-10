@@ -1,0 +1,55 @@
+{{!-- Hierarchical Navigation Partial --}}
+<div class="hierarchical-nav">
+  <ul class="nav-tree">
+    {{#if isRoot}}
+    <li class="nav-item current">
+      <a href="/">Home</a>
+    </li>
+    {{else}}
+    <li class="nav-item">
+      <a href="/">Home</a>
+      {{#if parentPage}}
+      <ul class="nav-subtree">
+        <li class="nav-item {{#if isCurrentPage}}current{{/if}}">
+          <a href="/{{slug}}">{{name}}</a>
+        </li>
+      </ul>
+      {{/if}}
+    </li>
+    {{/if}}
+  </ul>
+</div>
+
+<style>
+  .hierarchical-nav {
+    margin-bottom: 1.5rem;
+    border: 1px solid #eee;
+    padding: 1rem;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+  }
+  .nav-tree {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+  .nav-subtree {
+    list-style: none;
+    padding-left: 1.5rem;
+    margin-top: 0.5rem;
+  }
+  .nav-item {
+    margin-bottom: 0.5rem;
+  }
+  .nav-item.current > a {
+    font-weight: bold;
+    color: #0066cc;
+  }
+  .nav-item a {
+    text-decoration: none;
+    color: #333;
+  }
+  .nav-item a:hover {
+    text-decoration: underline;
+  }
+</style>

@@ -45,8 +45,8 @@ for (let i = 0; i < args.length; i++) {
   if (arg.startsWith('--')) {
     const option = arg.substring(2);
     const value = args[++i];
-    
-    if (options.hasOwnProperty(option)) {
+
+    if (Object.prototype.hasOwnProperty.call(options, option)) {
       options[option] = value;
     }
   }
@@ -89,8 +89,9 @@ try {
  * @returns {Promise<Object>} - Server response
  */
 async function sendToServer(endpoint, data) {
-  const url = `${options.host}:${options.port}/backend/${endpoint}`;
-  
+  // The apiRouter is mounted at /api/v1 and endpoints are at /api/v1/backend/{endpoint}
+  const url = `${options.host}:${options.port}/api/v1/backend/${endpoint}`;
+
   try {
     const response = await fetch(url, {
       method: 'POST',

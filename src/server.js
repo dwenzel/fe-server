@@ -13,13 +13,15 @@ import templateConfig from './config/templates.js';
 import PagesMiddleware from './middleware/pages.js';
 import ItemsMiddleware from './middleware/items.js';
 import TemplateRenderer from './services/templates/template-renderer.js';
+import { createApiRouter, createPagesRouter } from './routers/index.js';
 
 // Setup directory paths
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const dataDir = path.join(__dirname, '../data');
+const resetMarkerPath = path.join(dataDir, 'reset-server.marker');
 
-// Create data directory if it doesn't exist
+// Create a data directory if it doesn't exist
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
@@ -33,227 +35,89 @@ const HOST = config.server.host;
 app.use(cors());
 app.use(bodyParser.json());
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'healthy' });
-});
-
-// API version endpoint
-app.get('/version', (req, res) => {
-  res.status(200).json({
-    version: config.api.version,
-    server: 'Frontend Server API'
-  });
-});
+// Get API version from config
+const apiVersion = config.api.version;
 
 // Create API middleware instances
-const pagesMiddleware = new PagesMiddleware(logger);
-const itemsMiddleware = new ItemsMiddleware(logger, pagesMiddleware);
+let pagesMiddleware = new PagesMiddleware(logger);
+let itemsMiddleware = new ItemsMiddleware(logger, pagesMiddleware);
 
 // Create template renderer
-const templateRenderer = new TemplateRenderer(templateConfig, logger);
+let templateRenderer = new TemplateRenderer(templateConfig, logger);
 templateRenderer.ensureTemplateDirs();
 
-// Helper function to determine response format
-const determineResponseFormat = (req) => {
-  // Check if explicit JSON format is requested in Accept header
-  if (req.get('Accept') === 'application/json') {
-    return 'json';
-  }
-  
-  // Check query param first, then Accept header
-  const formatFromQuery = req.query.format;
-  const formatFromAccept = req.accepts(['html', 'json']);
-  
-  // Log for debugging
-  logger.info(`Content negotiation - Query format: ${formatFromQuery}, Accept format: ${formatFromAccept}`);
-  
-  return formatFromQuery || formatFromAccept || 'json';
-};
+// Create routers
+let apiRouter;
+let pagesRouter;
 
-// Mount API routes with versioning and backend prefix
-app.use('/backend/pages', pagesMiddleware.getRouter());
-app.use('/backend/items', itemsMiddleware.getRouter());
+// Function to create/recreate routers with current middleware instances
+function setupRouters() {
+  // Create our routers
+  apiRouter = createApiRouter(pagesMiddleware, itemsMiddleware);
+  pagesRouter = createPagesRouter(pagesMiddleware, itemsMiddleware, templateRenderer);
 
-// Public frontend routes for pages
-app.get('/frontend/pages', (req, res) => {
-  const pagesArray = Array.from(pagesMiddleware.getDataStore().values());
-  
-  // Determine format (JSON or HTML)
-  const format = determineResponseFormat(req);
-  
-  if (format === 'html') {
-    try {
-      // Transform pages array for template rendering
-      const templateData = {
-        title: 'All Pages',
-        pages: pagesArray,
-        meta: {
-          title: 'All Pages',
-          description: 'List of all pages in the Frontend Server'
-        }
-      };
-      
-      // Render with the appropriate template
-      const html = templateRenderer.renderContent(templateData, 'page', {
-        template: 'pages/list',
-        engine: req.query.engine
-      });
-      
-      res.status(200).type('html').send(html);
-    } catch (error) {
-      logger.error(`Error rendering pages list: ${error.message}`, error);
-      res.status(500).json({ error: 'Failed to render pages list' });
-    }
-  } else {
-    // Default to JSON response
-    res.status(200).json(pagesArray);
+  // Remove existing routes if app._router exists
+  if (app._router && app._router.stack) {
+    logger.info('Cleaning up existing router stack before reconfiguration');
+    app._router.stack = app._router.stack.filter(layer => {
+      return layer.name !== 'router' ||
+             (layer.regexp && !layer.regexp.test(`/api/${apiVersion}`) &&
+              layer.regexp && !layer.regexp.test('/'));
+    });
   }
-});
 
-app.get('/frontend/pages/:id', (req, res) => {
-  const id = req.params.id;
-  
-  if (!pagesMiddleware.hasPage(id)) {
-    logger.warn(`Page not found with ID: ${id}`);
-    
-    // Decide format for error response
-    const format = determineResponseFormat(req);
-    
-    if (format === 'html') {
-      // Render error page
-      try {
-        const html = templateRenderer.renderError('Page not found', 404);
-        return res.status(404).send(html);
-      } catch (error) {
-        logger.error(`Error rendering error page: ${error.message}`, error);
-        return res.status(404).json({ error: 'Page not found' });
-      }
-    } else {
-      return res.status(404).json({ error: 'Page not found' });
-    }
-  }
-  
-  const page = pagesMiddleware.getDataStore().get(id);
-  
-  // Determine format (JSON or HTML)
-  const format = determineResponseFormat(req);
-  
-  if (format === 'html') {
-    try {
-      // Add current date for template
-      const currentYear = new Date().getFullYear();
-      
-      // Render with the appropriate template
-      const html = templateRenderer.renderPage({
-        ...page,
-        currentYear
-      }, {
-        engine: req.query.engine,
-        req
-      });
-      
-      res.status(200).type('html').send(html);
-    } catch (error) {
-      logger.error(`Error rendering page: ${error.message}`, error);
-      res.status(500).json({ error: 'Failed to render page' });
-    }
-  } else {
-    // Default to JSON response
-    res.status(200).json(page);
-  }
-});
+  // Reset middlewares to re-mount routers
+  app._router = undefined;
 
-// Public frontend routes for items
-app.get('/frontend/items', (req, res) => {
-  const itemsArray = Array.from(itemsMiddleware.getDataStore().values());
-  
-  // Determine format (JSON or HTML)
-  const format = determineResponseFormat(req);
-  
-  if (format === 'html') {
-    try {
-      // Transform items array for template rendering
-      const templateData = {
-        title: 'All Items',
-        items: itemsArray,
-        meta: {
-          title: 'All Items',
-          description: 'List of all items in the Frontend Server'
-        }
-      };
-      
-      // Render with the appropriate template
-      const html = templateRenderer.renderContent(templateData, 'item', {
-        template: 'items/list',
-        engine: req.query.engine
-      });
-      
-      res.status(200).type('html').send(html);
-    } catch (error) {
-      logger.error(`Error rendering items list: ${error.message}`, error);
-      res.status(500).json({ error: 'Failed to render items list' });
-    }
-  } else {
-    // Default to JSON response
-    res.status(200).json(itemsArray);
-  }
-});
+  // IMPORTANT: Order matters for routing.
+  // First mount API router with versioning to ensure backend endpoints take precedence
+  logger.info(`Mounting API router at /api/${apiVersion}`);
+  app.use(`/api/${apiVersion}`, apiRouter);
 
-app.get('/frontend/items/:id', (req, res) => {
-  const id = req.params.id;
-  
-  const item = itemsMiddleware.getDataStore().get(id);
-  if (!item) {
-    logger.warn(`Item not found with ID: ${id}`);
-    
-    // Decide format for error response
-    const format = determineResponseFormat(req);
-    
-    if (format === 'html') {
-      // Render error page
-      try {
-        const html = templateRenderer.renderError('Item not found', 404);
-        return res.status(404).send(html);
-      } catch (error) {
-        logger.error(`Error rendering error page: ${error.message}`, error);
-        return res.status(404).json({ error: 'Item not found' });
-      }
-    } else {
-      return res.status(404).json({ error: 'Item not found' });
-    }
+  // Then mount Pages router directly at the root for slug-based routing
+  // This way, the API router will handle /api/v1/backend/* routes first
+  logger.info('Mounting pages router at root path for hierarchical routing');
+  app.use('/', pagesRouter);
+
+  logger.info('Routers have been reinitialized');
+}
+
+// Initial router setup - first create routers
+setupRouters();
+
+// Watch for reset marker file changes (for testing)
+try {
+  // Create an empty marker file if it doesn't exist
+  if (!fs.existsSync(resetMarkerPath)) {
+    fs.writeFileSync(resetMarkerPath, '');
   }
-  
-  // Determine format (JSON or HTML)
-  const format = determineResponseFormat(req);
-  
-  if (format === 'html') {
-    try {
-      // Add current date for template
-      const currentYear = new Date().getFullYear();
-      
-      // Render with the appropriate template
-      const html = templateRenderer.renderItem({
-        ...item,
-        currentYear
-      }, {
-        engine: req.query.engine,
-        req
-      });
-      
-      res.status(200).type('html').send(html);
-    } catch (error) {
-      logger.error(`Error rendering item: ${error.message}`, error);
-      res.status(500).json({ error: 'Failed to render item' });
+
+  // Watch the marker file for changes
+  fs.watch(resetMarkerPath, (eventType) => {
+    if (eventType === 'change') {
+      logger.info('Reset marker changed, reinitializing server state');
+
+      // Get the reset marker content - might indicate which test is running
+      const markerContent = fs.readFileSync(resetMarkerPath, 'utf-8');
+      logger.info(`Reset requested by: ${markerContent}`);
+
+      // Recreate middleware instances
+      pagesMiddleware = new PagesMiddleware(logger);
+      itemsMiddleware = new ItemsMiddleware(logger, pagesMiddleware);
+      templateRenderer = new TemplateRenderer(templateConfig, logger);
+
+      // Reconfigure routers
+      setupRouters();
     }
-  } else {
-    // Default to JSON response
-    res.status(200).json(item);
-  }
-});
+  });
+} catch (error) {
+  logger.error(`Failed to set up file watcher: ${error.message}`, error);
+}
+
+// The routers are now created and mounted in the setupRouters() function
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   logger.error(`Unhandled error: ${err.stack}`);
   res.status(500).json({ error: 'Internal server error' });
 });

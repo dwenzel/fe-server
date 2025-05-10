@@ -260,8 +260,8 @@ describe('TemplateRenderer', () => {
 
     test('renderError should render an error page', () => {
       const error = new Error('Test error');
-      const result = templateRenderer.renderError(error, 404);
-      
+      templateRenderer.renderError(error, 404);
+
       expect(handlebarsAdapter.render).toHaveBeenCalledWith(
         expect.any(String),
         expect.objectContaining({

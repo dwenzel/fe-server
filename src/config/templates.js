@@ -11,17 +11,17 @@ const baseTemplateDir = path.join(__dirname, '../../templates');
 export default {
   // Default template engine to use when not specified
   defaultEngine: 'handlebars',
-  
+
   // Enabled template engines
   enabledEngines: ['handlebars', 'pug', 'mustache'],
-  
+
   // Template directory paths for each engine
   templatePaths: {
     handlebars: path.join(baseTemplateDir, 'handlebars'),
     pug: path.join(baseTemplateDir, 'pug'),
     mustache: path.join(baseTemplateDir, 'mustache')
   },
-  
+
   // Engine-specific options
   engineOptions: {
     handlebars: {
@@ -47,7 +47,7 @@ export default {
       cache: true
     }
   },
-  
+
   // Map content types to template engines
   contentTypeMap: {
     'dynamic': 'handlebars',
@@ -56,7 +56,7 @@ export default {
     'project': 'pug',
     'event': 'mustache'
   },
-  
+
   // Default templates for different content types
   defaultTemplates: {
     page: {
