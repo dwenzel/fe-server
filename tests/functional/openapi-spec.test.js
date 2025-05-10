@@ -55,8 +55,7 @@ describe('OpenAPI Specification Tests', () => {
       ];
 
       for (const endpoint of endpointsToTest) {
-        const response = await request(API_URL)
-          [endpoint.method](endpoint.path)
+        const response = await request(API_URL)[endpoint.method](endpoint.path)
           .set('X-Api-Key', API_KEY)
           .send({ id: uuidv4() }); // Minimal payload for validation
         

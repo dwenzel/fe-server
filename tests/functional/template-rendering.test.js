@@ -1,26 +1,29 @@
 /**
  * Tests for template rendering functionality
  */
-import request from 'supertest';
 import { v4 as uuidv4 } from 'uuid';
 import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
-import cheerio from 'cheerio';
-import { 
-  rootId, aboutId, itemId,
+import {
+  aboutId, itemId,
   rootPage, aboutPage, testItem
 } from '../fixtures/test-pages.js';
 import { retryRequest, setupTestPages, cleanupTestPages } from '../fixtures/test-helpers.js';
 import { resetServerState } from '../fixtures/reset-helper.js';
 
-// Helper to create a cheerio instance safely
-const parseHtml = (html) => {
-  try {
-    return cheerio.load(html);
-  } catch (e) {
-    console.error('Failed to parse HTML:', e);
-    return null;
+// Helper function commented out for now as it's not being used
+// Can be uncommented when needed for HTML parsing tests
+/*
+const cheerioHelper = {
+  load: (html) => {
+    try {
+      return cheerio.load(html);
+    } catch (e) {
+      console.error('Failed to parse HTML:', e);
+      return null;
+    }
   }
 };
+*/
 
 // Constants
 const API_URL = process.env.API_URL || 'http://localhost:8080';

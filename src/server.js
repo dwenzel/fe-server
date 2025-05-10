@@ -7,7 +7,6 @@ import bodyParser from 'body-parser';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { watch } from 'fs';
 import logger from './services/logger.js';
 import config from './config.js';
 import templateConfig from './config/templates.js';
@@ -118,7 +117,7 @@ try {
 // The routers are now created and mounted in the setupRouters() function
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   logger.error(`Unhandled error: ${err.stack}`);
   res.status(500).json({ error: 'Internal server error' });
 });

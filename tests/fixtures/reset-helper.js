@@ -19,7 +19,7 @@ export async function isServerRunning(apiUrl = 'http://localhost:8080') {
     // Make a simple request to the API
     // The health endpoint returns 404 but the server is still running
     // so we'll just check if we get any response
-    const response = await fetch(`${apiUrl}/api/v1`);
+    await fetch(`${apiUrl}/api/v1`);
     return true; // If we get any response, assume server is running
   } catch (err) {
     return false;

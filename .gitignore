@@ -34,3 +34,5 @@ pids
 .DS_Store
 Thumbs.db
 workreports
+
+**/.claude/settings.local.json

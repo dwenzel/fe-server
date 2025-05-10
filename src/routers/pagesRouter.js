@@ -5,7 +5,6 @@ import { Router } from 'express';
 import logger from '../services/logger.js';
 import { createSlugResolver } from '../middleware/pages/index.js';
 import { determineResponseFormat } from '../utils/content-negotiation.js';
-import config from '../config.js';
 
 /**
  * Creates and configures the Pages router
@@ -304,7 +303,7 @@ export function createPagesRouter(pagesMiddleware, itemsMiddleware, templateRend
   pagesRouter.use(renderResolvedPage);
 
   // Error handling middleware
-  pagesRouter.use((err, req, res, next) => {
+  pagesRouter.use((err, req, res) => {
     logger.error(`Pages router error: ${err.stack}`);
 
     // Decide format for error response

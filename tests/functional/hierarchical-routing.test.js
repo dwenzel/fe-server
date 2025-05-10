@@ -1,11 +1,10 @@
 /**
  * Test for hierarchical slug-based routing
  */
-import request from 'supertest';
 import { v4 as uuidv4 } from 'uuid';
 import { expect, describe, test, beforeAll, afterAll, beforeEach } from '@jest/globals';
 import {
-  rootId, aboutId, teamId, productsId, productDetailId,
+  rootId, aboutId, teamId, productDetailId,
   rootPage, aboutPage, teamPage, productsPage, productDetailPage
 } from '../fixtures/test-pages.js';
 import { retryRequest, setupTestPages, cleanupTestPages } from '../fixtures/test-helpers.js';
