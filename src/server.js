@@ -56,31 +56,30 @@ function setupRouters() {
   // Create our routers
   apiRouter = createApiRouter(pagesMiddleware, itemsMiddleware);
   pagesRouter = createPagesRouter(pagesMiddleware, itemsMiddleware, templateRenderer);
-  
+
   // Remove existing routes if app._router exists
   if (app._router && app._router.stack) {
     logger.debug('Cleaning up existing router stack before reconfiguration');
     app._router.stack = app._router.stack.filter(layer => {
-      return layer.name !== 'router' || 
-             (layer.regexp && !layer.regexp.test(`/api/${apiVersion}`) && 
+      return layer.name !== 'router' ||
+             (layer.regexp && !layer.regexp.test(`/api/${apiVersion}`) &&
               layer.regexp && !layer.regexp.test('/'));
     });
   }
-  
+
   // Reset middlewares to re-mount routers
   app._router = undefined;
-  
-  // IMPORTANT: Order matters for routing. Mount the pages router first
-  // so slug-based routes take precedence, then mount API routes
-  
-  // First mount Pages router directly at the root for slug-based routing
-  logger.info('Mounting pages router at root path for hierarchical routing');
-  app.use('/', pagesRouter);
-  
-  // Then mount API router with versioning
+
+  // IMPORTANT: Order matters for routing.
+  // First mount API router with versioning to ensure backend endpoints take precedence
   logger.info(`Mounting API router at /api/${apiVersion}`);
   app.use(`/api/${apiVersion}`, apiRouter);
-  
+
+  // Then mount Pages router directly at the root for slug-based routing
+  // This way, the API router will handle /api/v1/backend/* routes first
+  logger.info('Mounting pages router at root path for hierarchical routing');
+  app.use('/', pagesRouter);
+
   logger.info('Routers have been reinitialized');
 }
 
@@ -93,21 +92,21 @@ try {
   if (!fs.existsSync(resetMarkerPath)) {
     fs.writeFileSync(resetMarkerPath, '');
   }
-  
+
   // Watch the marker file for changes
   fs.watch(resetMarkerPath, (eventType) => {
     if (eventType === 'change') {
       logger.info('Reset marker changed, reinitializing server state');
-      
+
       // Get the reset marker content - might indicate which test is running
       const markerContent = fs.readFileSync(resetMarkerPath, 'utf-8');
       logger.info(`Reset requested by: ${markerContent}`);
-      
+
       // Recreate middleware instances
       pagesMiddleware = new PagesMiddleware(logger);
       itemsMiddleware = new ItemsMiddleware(logger, pagesMiddleware);
       templateRenderer = new TemplateRenderer(templateConfig, logger);
-      
+
       // Reconfigure routers
       setupRouters();
     }

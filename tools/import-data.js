@@ -89,8 +89,9 @@ try {
  * @returns {Promise<Object>} - Server response
  */
 async function sendToServer(endpoint, data) {
+  // The apiRouter is mounted at /api/v1 and endpoints are at /api/v1/backend/{endpoint}
   const url = `${options.host}:${options.port}/api/v1/backend/${endpoint}`;
-  
+
   try {
     const response = await fetch(url, {
       method: 'POST',
