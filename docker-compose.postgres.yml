@@ -1,0 +1,62 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pages-items-api-postgres
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+      - API_KEY=test-api-key
+      - DB_TYPE=postgresql
+      - POSTGRESQL_HOST=postgres
+      - POSTGRESQL_PORT=5432
+      - POSTGRESQL_USER=postgres
+      - POSTGRESQL_PASSWORD=postgres
+      - POSTGRESQL_DATABASE=fe_server
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=fe_server
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: pages-items-api-test
+    environment:
+      - NODE_ENV=test
+      - API_URL=http://api:8080
+      - API_KEY=test-api-key
+      - TEST_TYPE=${TEST_TYPE:-all}
+    volumes:
+      - ./.build/reports:/app/.build/reports
+      - ./tests:/app/tests:ro
+      - ./src:/app/src:ro
+    depends_on:
+      - api
+    command: ["./docker/wait-for-it.sh", "api:8080", "--", "npm", "run", "test:functional"]
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+    name: postgres-api-network
+    driver: bridge

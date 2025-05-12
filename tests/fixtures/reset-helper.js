@@ -17,10 +17,8 @@ const resetMarkerPath = path.join(dataDir, 'reset-server.marker');
 export async function isServerRunning(apiUrl = 'http://localhost:8080') {
   try {
     // Make a simple request to the API
-    // The health endpoint returns 404 but the server is still running
-    // so we'll just check if we get any response
-    await fetch(`${apiUrl}/api/v1`);
-    return true; // If we get any response, assume server is running
+    const response = await fetch(`${apiUrl}/api/v1/health`);
+    return response.status === 200; // Check for a 200 OK status code
   } catch (err) {
     return false;
   }
@@ -47,7 +45,9 @@ export async function ensureServerRunning() {
   // We can't start the server in a child process from within Jest tests
   // Instead we'll warn the user
   console.warn(`WARNING: Server not detected at ${apiUrl}.`);
-  console.warn('Please start the server manually with: npm start');
+  console.warn('Please start the server manually with one of:');
+  console.warn('- npm start           # for in-memory database');
+  console.warn('- npm run start:db    # for database-backed version');
   console.warn('Tests may fail if the server is not running.');
 
   // Try checking again after a short delay
@@ -92,7 +92,8 @@ export async function resetServerState(testName = 'unknown-test') {
   fs.writeFileSync(resetMarkerPath, markerContent);
 
   // Wait for the reset to take effect
+  // Note: database reset might need more time
   console.log('Waiting for server reset to take effect...');
-  await new Promise(resolve => setTimeout(resolve, 1500));
+  await new Promise(resolve => setTimeout(resolve, 2000));
   console.log('Reset wait completed');
 }

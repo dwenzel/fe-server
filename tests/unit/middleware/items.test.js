@@ -1,19 +1,14 @@
 /**
- * Unit tests for ItemsMiddleware
+ * Unit tests for Items middleware (uses database adapter)
  */
-import PagesMiddleware from '../../../src/middleware/pages.js';
 import ItemsMiddleware from '../../../src/middleware/items.js';
+import PagesMiddleware from '../../../src/middleware/pages.js';
+import { ItemsRepository, PagesRepository } from '../../../src/services/database/repository.js';
+import { InMemoryAdapter } from '../../../src/services/database/memory-adapter.js';
 import { v4 as uuidv4 } from 'uuid';
-import { describe, test, beforeEach, jest, expect } from "@jest/globals";
+import { describe, test, beforeEach, afterEach, jest, expect } from "@jest/globals";
 
-// Mock logger
-const mockLogger = {
-  info: jest.fn(),
-  warn: jest.fn(),
-  error: jest.fn()
-};
-
-// Mock request and response
+// Mock Express request and response objects
 const mockRequest = (body = {}, params = {}, headers = {}, method = 'GET') => ({
   body,
   params,
@@ -29,39 +24,51 @@ const mockResponse = () => {
   return res;
 };
 
-// Mock next function
-const mockNext = jest.fn();
+// Mock logger
+const mockLogger = {
+  info: jest.fn(),
+  warn: jest.fn(),
+  error: jest.fn()
+};
 
-describe('Items Middleware', () => {
+describe('ItemsMiddleware with database', () => {
   let pagesMiddleware, itemsMiddleware;
+  let pagesRepository, itemsRepository;
+  let adapter;
 
-  beforeEach(() => {
-    pagesMiddleware = new PagesMiddleware(mockLogger);
-    itemsMiddleware = new ItemsMiddleware(mockLogger, pagesMiddleware);
-    mockNext.mockClear();
-    mockLogger.info.mockClear();
-    mockLogger.warn.mockClear();
+  beforeEach(async () => {
+    // Setup InMemoryAdapter and repositories
+    adapter = new InMemoryAdapter();
+    await adapter.connect();
+    pagesRepository = new PagesRepository(adapter);
+    itemsRepository = new ItemsRepository(adapter);
+
+    // Create middleware with repositories
+    pagesMiddleware = new PagesMiddleware(mockLogger, pagesRepository);
+    itemsMiddleware = new ItemsMiddleware(mockLogger, pagesMiddleware, itemsRepository);
+
+    // Clear mocks
+    jest.clearAllMocks();
+  });
+
+  afterEach(async () => {
+    await adapter.disconnect();
   });
 
   test('validateItem should pass valid item', () => {
-    // Create a parent page first
-    const pageId = uuidv4();
-    const page = { id: pageId, name: 'Parent Page' };
-    pagesMiddleware.getDataStore().set(pageId, page);
-
     const validItem = {
       id: uuidv4(),
       name: 'Test Item',
-      parent: pageId,
+      parent: uuidv4(),
       type: 'dynamic'
     };
 
     const req = mockRequest(validItem);
-    req.method = 'POST'; // Set method to POST for parent validation
     const res = mockResponse();
+    const next = jest.fn();
 
-    itemsMiddleware.validateItem(req, res, mockNext);
-    expect(mockNext).toHaveBeenCalled();
+    itemsMiddleware.validateItem(req, res, next);
+    expect(next).toHaveBeenCalled();
   });
 
   test('validateItem should reject item without ID', () => {
@@ -73,13 +80,14 @@ describe('Items Middleware', () => {
 
     const req = mockRequest(invalidItem);
     const res = mockResponse();
+    const next = jest.fn();
 
-    itemsMiddleware.validateItem(req, res, mockNext);
+    itemsMiddleware.validateItem(req, res, next);
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({ error: 'Item ID is required' });
-    expect(mockNext).not.toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalled();
   });
-  
+
   test('validateItem should reject item without parent', () => {
     const invalidItem = {
       id: uuidv4(),
@@ -89,13 +97,14 @@ describe('Items Middleware', () => {
 
     const req = mockRequest(invalidItem);
     const res = mockResponse();
+    const next = jest.fn();
 
-    itemsMiddleware.validateItem(req, res, mockNext);
+    itemsMiddleware.validateItem(req, res, next);
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({ error: 'Parent ID is required' });
-    expect(mockNext).not.toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalled();
   });
-  
+
   test('validateItem should reject item without type', () => {
     const invalidItem = {
       id: uuidv4(),
@@ -105,13 +114,14 @@ describe('Items Middleware', () => {
 
     const req = mockRequest(invalidItem);
     const res = mockResponse();
+    const next = jest.fn();
 
-    itemsMiddleware.validateItem(req, res, mockNext);
+    itemsMiddleware.validateItem(req, res, next);
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({ error: 'Item type is required' });
-    expect(mockNext).not.toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalled();
   });
-  
+
   test('validateItem should reject item with invalid ID format', () => {
     const invalidItem = {
       id: 'not-a-uuid',
@@ -122,11 +132,12 @@ describe('Items Middleware', () => {
 
     const req = mockRequest(invalidItem);
     const res = mockResponse();
+    const next = jest.fn();
 
-    itemsMiddleware.validateItem(req, res, mockNext);
+    itemsMiddleware.validateItem(req, res, next);
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({ error: 'Invalid UUID format for item ID' });
-    expect(mockNext).not.toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalled();
   });
 
   test('validateItem should reject item with invalid type', () => {
@@ -140,13 +151,14 @@ describe('Items Middleware', () => {
 
     const req = mockRequest(invalidItem);
     const res = mockResponse();
+    const next = jest.fn();
 
-    itemsMiddleware.validateItem(req, res, mockNext);
+    itemsMiddleware.validateItem(req, res, next);
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ error: expect.any(String) }));
-    expect(mockNext).not.toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalled();
   });
-  
+
   test('validateItem should reject item with invalid status', () => {
     const invalidItem = {
       id: uuidv4(),
@@ -160,58 +172,51 @@ describe('Items Middleware', () => {
 
     const req = mockRequest(invalidItem);
     const res = mockResponse();
+    const next = jest.fn();
 
-    itemsMiddleware.validateItem(req, res, mockNext);
+    itemsMiddleware.validateItem(req, res, next);
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ error: expect.stringContaining('Invalid status') }));
-    expect(mockNext).not.toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalled();
   });
-  
+
   test('validateItem should pass with empty attributes', () => {
-    const pageId = uuidv4();
-    const page = { id: pageId, name: 'Parent Page' };
-    pagesMiddleware.getDataStore().set(pageId, page);
-    
     const validItem = {
       id: uuidv4(),
       name: 'Test Item',
-      parent: pageId,
+      parent: uuidv4(),
       type: 'dynamic',
       attributes: {}
     };
-    
+
     const req = mockRequest(validItem);
-    req.method = 'POST';
     const res = mockResponse();
-    
-    itemsMiddleware.validateItem(req, res, mockNext);
-    expect(mockNext).toHaveBeenCalled();
+    const next = jest.fn();
+
+    itemsMiddleware.validateItem(req, res, next);
+    expect(next).toHaveBeenCalled();
   });
-  
+
   test('validateItem should pass with valid status', () => {
-    const pageId = uuidv4();
-    const page = { id: pageId, name: 'Parent Page' };
-    pagesMiddleware.getDataStore().set(pageId, page);
-    
     const validItem = {
       id: uuidv4(),
       name: 'Test Item',
-      parent: pageId,
+      parent: uuidv4(),
       type: 'dynamic',
-      attributes: { 
+      attributes: {
         status: 'Option1'  // Using a valid status from config
       }
     };
-    
+
     const req = mockRequest(validItem);
-    req.method = 'POST';
     const res = mockResponse();
-    
-    itemsMiddleware.validateItem(req, res, mockNext);
-    expect(mockNext).toHaveBeenCalled();
+    const next = jest.fn();
+
+    itemsMiddleware.validateItem(req, res, next);
+    expect(next).toHaveBeenCalled();
   });
-  
-  test('validateItem should reject creation with non-existent parent', () => {
+
+  test('validateParent should reject creation with non-existent parent', async () => {
     const nonExistentParentId = uuidv4();
     const item = {
       id: uuidv4(),
@@ -223,18 +228,19 @@ describe('Items Middleware', () => {
     const req = mockRequest(item);
     req.method = 'POST'; // Set method to POST for parent validation
     const res = mockResponse();
+    const next = jest.fn();
 
-    itemsMiddleware.validateItem(req, res, mockNext);
+    await itemsMiddleware.validateParent(req, res, next);
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({ error: 'Parent ID does not reference an existing page or item' });
     expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining(nonExistentParentId));
   });
-  
-  test('item creation with parent as another item should be valid', () => {
+
+  test('item creation with parent as another item should be valid', async () => {
     // Create a parent item first
     const parentItemId = uuidv4();
     const parentItem = { id: parentItemId, name: 'Parent Item', type: 'dynamic', parent: uuidv4() };
-    itemsMiddleware.getDataStore().set(parentItemId, parentItem);
+    await itemsRepository.create(parentItem);
 
     // Create a child item
     const childItem = {
@@ -247,51 +253,58 @@ describe('Items Middleware', () => {
     const req = mockRequest(childItem);
     req.method = 'POST'; // Set method to POST for parent validation
     const res = mockResponse();
+    const next = jest.fn();
 
-    itemsMiddleware.validateItem(req, res, mockNext);
-    expect(mockNext).toHaveBeenCalled();
+    await itemsMiddleware.validateParent(req, res, next);
+    expect(next).toHaveBeenCalled();
   });
-  
-  test('getAllItems should return array of all items', () => {
+
+  test('getAllItems should return array of all items', async () => {
     // Add a few items
     const item1 = { id: uuidv4(), name: 'Item 1', type: 'dynamic', parent: uuidv4() };
     const item2 = { id: uuidv4(), name: 'Item 2', type: 'static', parent: uuidv4() };
-    itemsMiddleware.getDataStore().set(item1.id, item1);
-    itemsMiddleware.getDataStore().set(item2.id, item2);
+    await itemsRepository.create(item1);
+    await itemsRepository.create(item2);
 
     const req = mockRequest();
     const res = mockResponse();
 
-    itemsMiddleware.getAllItems(req, res);
+    await itemsMiddleware.getAllItems(req, res);
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(expect.arrayContaining([item1, item2]));
+    expect(res.json).toHaveBeenCalledWith(expect.arrayContaining([
+      expect.objectContaining({ name: 'Item 1' }),
+      expect.objectContaining({ name: 'Item 2' })
+    ]));
   });
-  
-  test('getItem should return item when it exists', () => {
+
+  test('getItem should return item when it exists', async () => {
     const itemId = uuidv4();
     const item = { id: itemId, name: 'Test Item', type: 'dynamic', parent: uuidv4() };
-    itemsMiddleware.getDataStore().set(itemId, item);
-    
+    await itemsRepository.create(item);
+
     const req = mockRequest({}, { id: itemId });
     const res = mockResponse();
-    
-    itemsMiddleware.getItem(req, res);
+
+    await itemsMiddleware.getItem(req, res);
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(item);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      id: itemId,
+      name: 'Test Item'
+    }));
   });
-  
-  test('getItem should return 404 for non-existent item', () => {
+
+  test('getItem should return 404 for non-existent item', async () => {
     const nonExistentId = uuidv4();
     const req = mockRequest({}, { id: nonExistentId });
     const res = mockResponse();
 
-    itemsMiddleware.getItem(req, res);
+    await itemsMiddleware.getItem(req, res);
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith({ error: 'Item not found' });
     expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining(nonExistentId));
   });
-  
-  test('createItem should store item and return 201', () => {
+
+  test('createItem should store item and return 201', async () => {
     const itemId = uuidv4();
     const pageId = uuidv4();
     const item = {
@@ -304,47 +317,51 @@ describe('Items Middleware', () => {
     const req = mockRequest(item);
     const res = mockResponse();
 
-    itemsMiddleware.createItem(req, res);
+    await itemsMiddleware.createItem(req, res);
     expect(res.status).toHaveBeenCalledWith(201);
-    
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      success: true,
+      id: itemId
+    }));
+
     // Verify item was stored
-    const storedItem = itemsMiddleware.getDataStore().get(itemId);
-    expect(storedItem).toEqual(item);
+    const storedItem = await itemsRepository.getById(itemId);
+    expect(storedItem).toEqual(expect.objectContaining(item));
   });
-  
-  test('updateItem should update existing item and return 200', () => {
+
+  test('updateItem should update existing item and return 200', async () => {
     // Create an item first
     const itemId = uuidv4();
-    const originalItem = { 
-      id: itemId, 
+    const originalItem = {
+      id: itemId,
       name: 'Original Item',
       parent: uuidv4(),
       type: 'dynamic'
     };
-    itemsMiddleware.getDataStore().set(itemId, originalItem);
-    
+    await itemsRepository.create(originalItem);
+
     // Update it
-    const updatedItem = { 
-      id: itemId, 
+    const updatedItem = {
+      id: itemId,
       name: 'Updated Item',
       parent: originalItem.parent,
       type: 'dynamic'
     };
     const req = mockRequest(updatedItem, { id: itemId });
     const res = mockResponse();
-    
-    itemsMiddleware.updateItem(req, res);
+
+    await itemsMiddleware.updateItem(req, res);
     expect(res.status).toHaveBeenCalledWith(200);
-    
+
     // Verify item was updated
-    const storedItem = itemsMiddleware.getDataStore().get(itemId);
-    expect(storedItem).toEqual(updatedItem);
+    const storedItem = await itemsRepository.getById(itemId);
+    expect(storedItem.name).toBe('Updated Item');
   });
-  
-  test('updateItem should return 404 for non-existent item', () => {
+
+  test('updateItem should return 404 for non-existent item', async () => {
     const nonExistentId = uuidv4();
-    const updatedItem = { 
-      id: nonExistentId, 
+    const updatedItem = {
+      id: nonExistentId,
       name: 'Updated Item',
       parent: uuidv4(),
       type: 'dynamic'
@@ -352,41 +369,44 @@ describe('Items Middleware', () => {
     const req = mockRequest(updatedItem, { id: nonExistentId });
     const res = mockResponse();
 
-    itemsMiddleware.updateItem(req, res);
+    await itemsMiddleware.updateItem(req, res);
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith({ error: 'Item not found' });
     expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining(nonExistentId));
   });
-  
-  test('deleteItem should remove item and return 204', () => {
+
+  test('deleteItem should remove item and return 204', async () => {
     const itemId = uuidv4();
-    const item = { 
-      id: itemId, 
+    const item = {
+      id: itemId,
       name: 'Test Item',
       parent: uuidv4(),
       type: 'dynamic'
     };
-    itemsMiddleware.getDataStore().set(itemId, item);
-    
+    await itemsRepository.create(item);
+
     const req = mockRequest({}, { id: itemId });
     const res = mockResponse();
-    
-    itemsMiddleware.deleteItem(req, res);
+
+    await itemsMiddleware.deleteItem(req, res);
     expect(res.status).toHaveBeenCalledWith(204);
-    expect(itemsMiddleware.getDataStore().has(itemId)).toBe(false);
+
+    // Verify item was deleted
+    const exists = await itemsRepository.exists(itemId);
+    expect(exists).toBe(false);
   });
-  
-  test('deleteItem should return 404 for non-existent item', () => {
+
+  test('deleteItem should return 404 for non-existent item', async () => {
     const nonExistentId = uuidv4();
     const req = mockRequest({}, { id: nonExistentId });
     const res = mockResponse();
 
-    itemsMiddleware.deleteItem(req, res);
+    await itemsMiddleware.deleteItem(req, res);
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith({ error: 'Item not found' });
     expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining(nonExistentId));
   });
-  
+
   test('getRouter should return router instance', () => {
     const router = itemsMiddleware.getRouter();
     expect(router).toBeDefined();

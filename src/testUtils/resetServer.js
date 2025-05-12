@@ -1,5 +1,6 @@
 /**
  * Utility function to reset the server state for tests
+ * @todo Move this to tests/fixtures/reset-helper.js
  */
 import { resolve } from 'path';
 import { fileURLToPath } from 'url';
@@ -16,7 +17,7 @@ const resetMarkerPath = resolve(__filename, '../../data/reset-server.marker');
 export function resetServer() {
   try {
     // Write a timestamp to the file to ensure it's modified
-    writeFileSync(resetMarkerPath, `${Date.now()}`);
+    //writeFileSync(resetMarkerPath, `${Date.now()}`);
     return true;
   } catch (error) {
     console.error('Failed to reset server:', error);

@@ -38,90 +38,91 @@ describe('Slug Resolver Middleware', () => {
     // Setup mock pages middleware with a hierarchy of pages
     beforeEach(() => {
       mockPages = [
-        { id: 'root-id', isRoot: true, slug: '' },
-        { id: 'about-id', parent: 'root-id', slug: 'about' },
-        { id: 'team-id', parent: 'about-id', slug: 'team' },
-        { id: 'products-id', parent: 'root-id', slug: 'products' },
-        { id: 'product1-id', parent: 'products-id', slug: 'widget-x' }
+        { id: 'root-id', isRoot: true, slug: '', title: 'Root Page' },
+        { id: 'about-id', parent: 'root-id', slug: 'about', title: 'About Page' },
+        { id: 'team-id', parent: 'about-id', slug: 'team', title: 'Team Page' },
+        { id: 'products-id', parent: 'root-id', slug: 'products', title: 'Products Page' },
+        { id: 'product1-id', parent: 'products-id', slug: 'widget-x', title: 'Widget X Page' }
       ];
 
+      // Create repository mock with needed methods
+      const repositoryMock = {
+        findRootPage: jest.fn(async () => mockPages.find(page => page.isRoot)),
+        findChildPages: jest.fn(async (parentId) => mockPages.filter(page => page.parent === parentId)),
+        getAll: jest.fn(async () => mockPages)
+      };
+
       pagesMiddleware = {
-        findRootPage: jest.fn(() => mockPages.find(page => page.isRoot)),
-        findChildPages: jest.fn(parentId => mockPages.filter(page => page.parent === parentId)),
-        getDataStore: jest.fn(() => {
-          const store = new Map();
-          mockPages.forEach(page => store.set(page.id, page));
-          return store;
-        })
+        repository: repositoryMock
       };
     });
 
-    test('should resolve root path to root page', () => {
+    test('should resolve root path to root page', async () => {
       const slugResolver = createSlugResolver(pagesMiddleware);
       const req = { path: '/' };
       const res = {};
       const next = jest.fn();
 
-      slugResolver(req, res, next);
+      await slugResolver(req, res, next);
 
-      expect(pagesMiddleware.findRootPage).toHaveBeenCalled();
+      expect(pagesMiddleware.repository.findRootPage).toHaveBeenCalled();
       expect(req.resolvedPage).toEqual(mockPages[0]);
       expect(next).toHaveBeenCalled();
     });
 
-    test('should resolve first-level slug path correctly', () => {
+    test('should resolve first-level slug path correctly', async () => {
       const slugResolver = createSlugResolver(pagesMiddleware);
       const req = { path: '/about' };
       const res = {};
       const next = jest.fn();
 
-      slugResolver(req, res, next);
+      await slugResolver(req, res, next);
 
-      expect(pagesMiddleware.findRootPage).toHaveBeenCalled();
-      expect(pagesMiddleware.findChildPages).toHaveBeenCalledWith('root-id');
+      expect(pagesMiddleware.repository.findRootPage).toHaveBeenCalled();
+      expect(pagesMiddleware.repository.findChildPages).toHaveBeenCalledWith('root-id');
       expect(req.resolvedPage).toEqual(mockPages[1]);
       expect(next).toHaveBeenCalled();
     });
 
-    test('should resolve nested slug path correctly', () => {
+    test('should resolve nested slug path correctly', async () => {
       const slugResolver = createSlugResolver(pagesMiddleware);
       const req = { path: '/about/team' };
       const res = {};
       const next = jest.fn();
 
-      slugResolver(req, res, next);
+      await slugResolver(req, res, next);
 
-      expect(pagesMiddleware.findRootPage).toHaveBeenCalled();
-      expect(pagesMiddleware.findChildPages).toHaveBeenCalledWith('root-id');
-      expect(pagesMiddleware.findChildPages).toHaveBeenCalledWith('about-id');
+      expect(pagesMiddleware.repository.findRootPage).toHaveBeenCalled();
+      expect(pagesMiddleware.repository.findChildPages).toHaveBeenCalledWith('root-id');
+      expect(pagesMiddleware.repository.findChildPages).toHaveBeenCalledWith('about-id');
       expect(req.resolvedPage).toEqual(mockPages[2]);
       expect(next).toHaveBeenCalled();
     });
 
-    test('should handle non-existent slug path', () => {
+    test('should handle non-existent slug path', async () => {
       const slugResolver = createSlugResolver(pagesMiddleware);
       const req = { path: '/non-existent' };
       const res = {};
       const next = jest.fn();
 
-      slugResolver(req, res, next);
+      await slugResolver(req, res, next);
 
-      expect(pagesMiddleware.findRootPage).toHaveBeenCalled();
-      expect(pagesMiddleware.findChildPages).toHaveBeenCalledWith('root-id');
+      expect(pagesMiddleware.repository.findRootPage).toHaveBeenCalled();
+      expect(pagesMiddleware.repository.findChildPages).toHaveBeenCalledWith('root-id');
       expect(req.resolvedPage).toBeUndefined();
       expect(next).toHaveBeenCalled();
     });
 
-    test('should handle path with query parameters', () => {
+    test('should handle path with query parameters', async () => {
       const slugResolver = createSlugResolver(pagesMiddleware);
       const req = { path: '/about?param=value' };
       const res = {};
       const next = jest.fn();
 
-      slugResolver(req, res, next);
+      await slugResolver(req, res, next);
 
-      expect(pagesMiddleware.findRootPage).toHaveBeenCalled();
-      expect(pagesMiddleware.findChildPages).toHaveBeenCalledWith('root-id');
+      expect(pagesMiddleware.repository.findRootPage).toHaveBeenCalled();
+      expect(pagesMiddleware.repository.findChildPages).toHaveBeenCalledWith('root-id');
       expect(req.resolvedPage).toEqual(mockPages[1]);
       expect(next).toHaveBeenCalled();
     });

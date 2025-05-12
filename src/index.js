@@ -1,5 +1,5 @@
 /**
- * Application entry point
+ * Application entry point with database support
  */
 import server from './server.js';
 import logger from './services/logger.js';

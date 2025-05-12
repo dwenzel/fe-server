@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  # Main API service with environment variable to select the database
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fe-server-api
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=development
+      - PORT=8080
+      - API_KEY=test-api-key
+      - DB_TYPE=${DB_TYPE:-memory}
+      # MongoDB settings
+      - MONGODB_URI=mongodb://mongodb:27017/fe-server
+      # PostgreSQL settings
+      - POSTGRESQL_HOST=postgres
+      - POSTGRESQL_PORT=5432
+      - POSTGRESQL_USER=postgres
+      - POSTGRESQL_PASSWORD=postgres
+      - POSTGRESQL_DATABASE=fe_server
+      # MySQL settings
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=fe_server
+      - MYSQL_PASSWORD=fe_server
+      - MYSQL_DATABASE=fe_server
+    volumes:
+      - ./src:/app/src
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - all-dbs-network
+    depends_on:
+      - mongodb
+      - postgres
+      - mysql
+
+  # MongoDB service
+  mongodb:
+    image: mongo:latest
+    container_name: fe-server-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - all-dbs-network
+    restart: unless-stopped
+
+  # PostgreSQL service
+  postgres:
+    image: postgres:latest
+    container_name: fe-server-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=fe_server
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - all-dbs-network
+    restart: unless-stopped
+
+  # MySQL service
+  mysql:
+    image: mysql:8.0
+    container_name: fe-server-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=fe_server
+      - MYSQL_USER=fe_server
+      - MYSQL_PASSWORD=fe_server
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - all-dbs-network
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+
+volumes:
+  mongodb_data:
+  postgres_data:
+  mysql_data:
+
+networks:
+  all-dbs-network:
+    driver: bridge

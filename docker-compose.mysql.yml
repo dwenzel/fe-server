@@ -1,0 +1,64 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pages-items-api-mysql
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+      - API_KEY=test-api-key
+      - DB_TYPE=mysql
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=fe_server
+      - MYSQL_PASSWORD=fe_server
+      - MYSQL_DATABASE=fe_server
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=fe_server
+      - MYSQL_USER=fe_server
+      - MYSQL_PASSWORD=fe_server
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: pages-items-api-test
+    environment:
+      - NODE_ENV=test
+      - API_URL=http://api:8080
+      - API_KEY=test-api-key
+      - TEST_TYPE=${TEST_TYPE:-all}
+    volumes:
+      - ./.build/reports:/app/.build/reports
+      - ./tests:/app/tests:ro
+      - ./src:/app/src:ro
+    depends_on:
+      - api
+    command: ["./docker/wait-for-it.sh", "api:8080", "--", "npm", "run", "test:functional"]
+
+volumes:
+  mysql_data:
+
+networks:
+  default:
+    name: mysql-api-network
+    driver: bridge

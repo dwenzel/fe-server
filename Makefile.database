@@ -1,0 +1,137 @@
+.PHONY: help-db start-memory start-mongodb start-postgres start-mysql \
+        stop-memory stop-mongodb stop-postgres stop-mysql \
+        test-memory test-mongodb test-postgres test-mysql \
+        import-memory import-mongodb import-postgres import-mysql \
+        dev-all dev-memory dev-mongodb dev-postgres dev-mysql \
+        stop-all
+
+# Variables
+DOCKER_COMPOSE = docker-compose
+
+# Database-specific commands help
+help-db:
+	@echo "Database-specific commands:"
+	@echo ""
+	@echo "Start commands:"
+	@echo "  make start-memory      - Start server with in-memory database"
+	@echo "  make start-mongodb     - Start server with MongoDB database"
+	@echo "  make start-postgres    - Start server with PostgreSQL database"
+	@echo "  make start-mysql       - Start server with MySQL database"
+	@echo ""
+	@echo "Stop commands:"
+	@echo "  make stop-memory       - Stop memory database server"
+	@echo "  make stop-mongodb      - Stop MongoDB database server"
+	@echo "  make stop-postgres     - Stop PostgreSQL database server"
+	@echo "  make stop-mysql        - Stop MySQL database server"
+	@echo "  make stop-all          - Stop all database servers"
+	@echo ""
+	@echo "Test commands:"
+	@echo "  make test-memory       - Run functional tests with in-memory database"
+	@echo "  make test-mongodb      - Run functional tests with MongoDB database"
+	@echo "  make test-postgres     - Run functional tests with PostgreSQL database"
+	@echo "  make test-mysql        - Run functional tests with MySQL database"
+	@echo ""
+	@echo "Import commands:"
+	@echo "  make import-memory     - Import data with in-memory database"
+	@echo "  make import-mongodb    - Import data with MongoDB database"
+	@echo "  make import-postgres   - Import data with PostgreSQL database"
+	@echo "  make import-mysql      - Import data with MySQL database"
+	@echo ""
+	@echo "Development commands:"
+	@echo "  make dev-all           - Start all databases with API server"
+	@echo "  make dev-memory        - Start development environment with in-memory database"
+	@echo "  make dev-mongodb       - Start development environment with MongoDB database"
+	@echo "  make dev-postgres      - Start development environment with PostgreSQL database"
+	@echo "  make dev-mysql         - Start development environment with MySQL database"
+
+# Start commands
+start-memory:
+	@echo "Starting server with in-memory database..."
+	$(DOCKER_COMPOSE) -f docker-compose.memory.yml up -d api
+
+start-mongodb:
+	@echo "Starting server with MongoDB database..."
+	$(DOCKER_COMPOSE) -f docker-compose.mongodb.yml up -d
+
+start-postgres:
+	@echo "Starting server with PostgreSQL database..."
+	$(DOCKER_COMPOSE) -f docker-compose.postgres.yml up -d
+
+start-mysql:
+	@echo "Starting server with MySQL database..."
+	$(DOCKER_COMPOSE) -f docker-compose.mysql.yml up -d
+
+# Stop commands
+stop-memory:
+	@echo "Stopping memory database server..."
+	$(DOCKER_COMPOSE) -f docker-compose.memory.yml down
+
+stop-mongodb:
+	@echo "Stopping MongoDB database server..."
+	$(DOCKER_COMPOSE) -f docker-compose.mongodb.yml down
+
+stop-postgres:
+	@echo "Stopping PostgreSQL database server..."
+	$(DOCKER_COMPOSE) -f docker-compose.postgres.yml down
+
+stop-mysql:
+	@echo "Stopping MySQL database server..."
+	$(DOCKER_COMPOSE) -f docker-compose.mysql.yml down
+
+stop-all: stop-memory stop-mongodb stop-postgres stop-mysql
+	@echo "All database servers stopped."
+
+# Test commands
+test-memory:
+	@echo "Running functional tests with in-memory database..."
+	npm run docker:test:memory
+
+test-mongodb:
+	@echo "Running functional tests with MongoDB database..."
+	npm run docker:test:mongodb
+
+test-postgres:
+	@echo "Running functional tests with PostgreSQL database..."
+	npm run docker:test:postgres
+
+test-mysql:
+	@echo "Running functional tests with MySQL database..."
+	npm run docker:test:mysql
+
+# Import commands
+import-memory:
+	@echo "Importing data with in-memory database..."
+	npm run import-data:docker:memory
+
+import-mongodb:
+	@echo "Importing data with MongoDB database..."
+	npm run import-data:docker:mongodb
+
+import-postgres:
+	@echo "Importing data with PostgreSQL database..."
+	npm run import-data:docker:postgres
+
+import-mysql:
+	@echo "Importing data with MySQL database..."
+	npm run import-data:docker:mysql
+
+# Development commands
+dev-all:
+	@echo "Starting all databases with API server..."
+	npm run docker:compose:dev
+
+dev-memory:
+	@echo "Starting development environment with in-memory database..."
+	npm run docker:compose:dev:memory
+
+dev-mongodb:
+	@echo "Starting development environment with MongoDB database..."
+	npm run docker:compose:dev:mongodb
+
+dev-postgres:
+	@echo "Starting development environment with PostgreSQL database..."
+	npm run docker:compose:dev:postgres
+
+dev-mysql:
+	@echo "Starting development environment with MySQL database..."
+	npm run docker:compose:dev:mysql

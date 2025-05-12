@@ -9,7 +9,7 @@ describe('API Public Endpoints', () => {
   // Test data
   const pageId = uuidv4();
   const itemId = uuidv4();
-  
+
   const testPage = {
     id: pageId,
     name: 'Test API Page',
@@ -22,7 +22,7 @@ describe('API Public Endpoints', () => {
       keywords: ['test', 'api', 'public']
     }
   };
-  
+
   const testItem = {
     id: itemId,
     name: 'Test API Item',
@@ -51,16 +51,16 @@ describe('API Public Endpoints', () => {
       .post('/api/v1/backend/pages')
       .set('X-Api-Key', API_KEY)
       .send(rootPage);
-    
+
     // Update test page to have the root page as parent
     testPage.parent = rootId;
-    
+
     // Create test page
     await request(API_URL)
       .post('/api/v1/backend/pages')
       .set('X-Api-Key', API_KEY)
       .send(testPage);
-      
+
     // Create test item
     await request(API_URL)
       .post('/api/v1/backend/items')
@@ -74,17 +74,17 @@ describe('API Public Endpoints', () => {
     await request(API_URL)
       .delete(`/api/v1/backend/items/${itemId}`)
       .set('X-Api-Key', API_KEY);
-      
+
     // Delete test page
     await request(API_URL)
       .delete(`/api/v1/backend/pages/${pageId}`)
       .set('X-Api-Key', API_KEY);
-      
+
     // Find and delete root page
     const rootPagesResponse = await request(API_URL)
       .get('/api/v1/pages')
       .set('Accept', 'application/json');
-      
+
     const rootPage = rootPagesResponse.body.find(page => page.isRoot === true);
     if (rootPage) {
       await request(API_URL)
@@ -96,13 +96,15 @@ describe('API Public Endpoints', () => {
   // Tests for pages endpoints
   describe('Pages API Endpoints', () => {
     test('GET /api/v1/pages - Should return all pages without authentication', async () => {
-      const response = await request(API_URL)
+      //const response = request(API_URL).get().accepts('application/json')
+
+        const response = await request(API_URL)
         .get('/api/v1/pages')
         .set('Accept', 'application/json');
-      
+
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true);
-      
+
       // Find our test page in the response
       const foundPage = response.body.find(page => page.id === pageId);
       expect(foundPage).toBeDefined();
@@ -113,7 +115,7 @@ describe('API Public Endpoints', () => {
       const response = await request(API_URL)
         .get(`/api/v1/pages/${pageId}`)
         .set('Accept', 'application/json');
-      
+
       expect(response.status).toBe(200);
       expect(response.body.id).toBe(pageId);
       expect(response.body.name).toBe('Test API Page');
@@ -125,7 +127,7 @@ describe('API Public Endpoints', () => {
       const response = await request(API_URL)
         .get(`/api/v1/pages/${nonExistentId}`)
         .set('Accept', 'application/json');
-      
+
       expect(response.status).toBe(404);
     });
   });
@@ -136,10 +138,10 @@ describe('API Public Endpoints', () => {
       const response = await request(API_URL)
         .get('/api/v1/items')
         .set('Accept', 'application/json');
-      
+
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true);
-      
+
       // Find our test item in the response
       const foundItem = response.body.find(item => item.id === itemId);
       expect(foundItem).toBeDefined();
@@ -151,7 +153,7 @@ describe('API Public Endpoints', () => {
       const response = await request(API_URL)
         .get(`/api/v1/items/${itemId}`)
         .set('Accept', 'application/json');
-      
+
       expect(response.status).toBe(200);
       expect(response.body.id).toBe(itemId);
       expect(response.body.name).toBe('Test API Item');
@@ -163,35 +165,35 @@ describe('API Public Endpoints', () => {
       const response = await request(API_URL)
         .get(`/api/v1/items/${nonExistentId}`)
         .set('Accept', 'application/json');
-      
+
       expect(response.status).toBe(404);
     });
   });
-  
+
   // Test for content negotiation
   describe('Content Negotiation', () => {
     test('Pages endpoint should support JSON format via Accept header', async () => {
       const response = await request(API_URL)
         .get(`/api/v1/pages/${pageId}`)
         .set('Accept', 'application/json');
-      
+
       expect(response.status).toBe(200);
       expect(response.type).toBe('application/json');
     });
-    
+
     test('Pages endpoint should support HTML format via Accept header', async () => {
       const response = await request(API_URL)
         .get(`/api/v1/pages/${pageId}`)
         .set('Accept', 'text/html');
-      
+
       expect(response.status).toBe(200);
       expect(response.type).toBe('text/html');
     });
-    
+
     test('Pages endpoint should support format query parameter', async () => {
       const response = await request(API_URL)
         .get(`/api/v1/pages/${pageId}?format=json`);
-      
+
       expect(response.status).toBe(200);
       expect(response.type).toBe('application/json');
     });

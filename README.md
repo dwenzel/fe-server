@@ -7,7 +7,7 @@
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D%2020.0.0-brightgreen.svg)](https://nodejs.org)
 [![License](https://img.shields.io/badge/license-Unlicense-blue.svg)](LICENSE)
 
-An Express.js-based Frontend Server API to manage pages and items, with support for hierarchical routing and multiple template engines.
+An Express.js-based Frontend Server API to manage pages and items, with support for hierarchical routing, multiple template engines, and database persistence.
 
 ## API Overview
 
@@ -22,6 +22,7 @@ The API provides endpoints to manage pages and items with the following operatio
 - Express.js v5 (beta)
 - Jest for testing
 - Docker for containerization
+- Multiple database backends (MongoDB, PostgreSQL, MySQL)
 
 ## Getting Started
 
@@ -75,6 +76,67 @@ Or:
 npm start
 ```
 
+### Database Support
+
+The application includes built-in database support with multiple backend options:
+
+- **In-Memory** (default): Simple in-memory storage for development and testing
+- **MongoDB**: Document database support
+- **PostgreSQL**: Relational database support
+- **MySQL**: Relational database support
+
+#### Configuring Database Type
+
+We've added new npm scripts to easily switch between database adapters:
+
+```bash
+# Use in-memory database (default)
+npm run start:memory
+
+# Use MongoDB
+npm run start:mongodb
+
+# Use PostgreSQL
+npm run start:postgres
+
+# Use MySQL
+npm run start:mysql
+```
+
+For development mode with auto-reload:
+
+```bash
+# Use in-memory database (default)
+npm run dev:memory
+
+# Use MongoDB
+npm run dev:mongodb
+
+# Use PostgreSQL
+npm run dev:postgres
+
+# Use MySQL
+npm run dev:mysql
+```
+
+You can also configure via environment variables:
+
+```bash
+# Use in-memory database (default)
+DB_TYPE=memory npm start
+
+# Use MongoDB
+DB_TYPE=mongodb MONGODB_URI=mongodb://localhost:27017/frontend-server npm start
+
+# Use PostgreSQL
+DB_TYPE=postgresql POSTGRES_HOST=localhost POSTGRES_PORT=5432 POSTGRES_DB=frontend_server POSTGRES_USER=postgres POSTGRES_PASSWORD=secret npm start
+
+# Use MySQL
+DB_TYPE=mysql MYSQL_HOST=localhost MYSQL_PORT=3306 MYSQL_DB=frontend_server MYSQL_USER=root MYSQL_PASSWORD=secret npm start
+```
+
+For detailed setup instructions, see [Database Setup Guide](./documentation/database-setup.md)
+
 ### Running with Docker
 
 1. Build the Docker image:
@@ -86,6 +148,62 @@ npm start
    ```
    make start
    ```
+
+### Running with Docker Compose
+
+We provide Docker Compose configurations for each database type to easily test different database backends:
+
+#### In-Memory Database (default)
+
+```bash
+# Start services
+npm run docker:compose:memory
+
+# Run tests
+npm run docker:test:memory
+
+# Stop services
+npm run docker:compose:memory:down
+```
+
+#### MongoDB
+
+```bash
+# Start services
+npm run docker:compose:mongodb
+
+# Run tests
+npm run docker:test:mongodb
+
+# Stop services
+npm run docker:compose:mongodb:down
+```
+
+#### PostgreSQL
+
+```bash
+# Start services
+npm run docker:compose:postgres
+
+# Run tests
+npm run docker:test:postgres
+
+# Stop services
+npm run docker:compose:postgres:down
+```
+
+#### MySQL
+
+```bash
+# Start services
+npm run docker:compose:mysql
+
+# Run tests
+npm run docker:test:mysql
+
+# Stop services
+npm run docker:compose:mysql:down
+```
 
 ## API Documentation
 
@@ -191,6 +309,24 @@ make test-unit-watch
 make test-functional-watch
 ```
 
+### Testing with Different Database Adapters
+
+You can run functional tests with specific database adapters:
+
+```bash
+# Run functional tests with in-memory database
+npm run test:memory
+
+# Run functional tests with MongoDB
+npm run test:mongodb
+
+# Run functional tests with PostgreSQL
+npm run test:postgres
+
+# Run functional tests with MySQL
+npm run test:mysql
+```
+
 ### Running Specific Test Files
 
 For tests involving hierarchical routing and template rendering, you may want to run specific test files:
@@ -228,9 +364,56 @@ This project includes GitHub Actions workflows for continuous integration:
 
 The test results and coverage reports are available as artifacts in GitHub Actions.
 
+## Architecture
+
+### Database Layer
+
+The application uses a repository pattern to abstract database interactions:
+
+1. **Database Adapter Interface**: Defines a common interface for all database backends
+2. **Repository Layer**: Provides entity-specific operations for Pages and Items
+3. **Multiple Implementations**:
+   - InMemoryAdapter: For development and testing
+   - MongoDBAdapter: For MongoDB support
+   - PostgresAdapter: For PostgreSQL support
+   - MySQLAdapter: For MySQL support
+
+See the [Database Adapters documentation](./documentation/architecture/database-adapters.md) for more details.
+
 ## Makefile Commands
 
 Run `make help` to see all available commands.
+
+### Database-Specific Commands
+
+We've added a separate Makefile for database-specific operations. Run `make -f Makefile.database help-db` to see all database-specific commands:
+
+```bash
+# Start servers with specific databases
+make -f Makefile.database start-memory
+make -f Makefile.database start-mongodb
+make -f Makefile.database start-postgres
+make -f Makefile.database start-mysql
+
+# Run tests with specific databases
+make -f Makefile.database test-memory
+make -f Makefile.database test-mongodb
+make -f Makefile.database test-postgres
+make -f Makefile.database test-mysql
+
+# Import data to specific databases
+make -f Makefile.database import-memory
+make -f Makefile.database import-mongodb
+make -f Makefile.database import-postgres
+make -f Makefile.database import-mysql
+
+# Development environments with all databases running
+make -f Makefile.database dev-all      # Starts all databases with API server
+make -f Makefile.database dev-memory   # API using in-memory database
+make -f Makefile.database dev-mongodb  # API using MongoDB
+make -f Makefile.database dev-postgres # API using PostgreSQL
+make -f Makefile.database dev-mysql    # API using MySQL
+```
 
 ## License
 
