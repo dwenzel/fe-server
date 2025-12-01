@@ -32,7 +32,7 @@
     "axios": "^1.9.0",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
-    "express": "^5.1.0",
+    "express": "^5.2.1",
     "handlebars": "^4.7.8",
     "mustache": "^4.2.0",
     "pug": "^3.0.3",
